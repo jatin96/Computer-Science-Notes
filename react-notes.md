@@ -35,5 +35,45 @@ Dev dependencies are not bundled in the production bundle. These are only used b
 
 You should ideally never use -g flag because it installs packages in your system in global scope so that many react projects can use it. It should not be used because even if you package.json file doesn't contain the dependency you need, it will get imported if it was installed in global scope. If someone else will install the package.json file, then he would realize some dependencies are missing.
 
+## Versioning
+
+major.minor.patch 
+- ^ upgrade only minor and patch
+
+## JSX
+
+This is the engine used by react to render your app.
+
+## Virtual DOM
+
+React works on the princple of virtual doms. A virtual DOM is an exact replica of the original DOM. React makes changes to the virtual DOM. Then, the virtual DOM is diffed with the original DOM and only those nodes are updated which have changed.
+
+## let vs const
+
+- let is used for variables that can change
+- const is used for variables which cannot be changed
+
+## Spread operator
+
+spread operator flats and adds the properties or elements into another object.
+
+eg
+
+```js
+const arr = [1, 2, 3, 4];
+const arr1 = [0, ...arr]
+console.log(arr1) // output: [0,1,2,3,4]
+```
+
+## Unique keys while looping any element
+
+Whenever you are looping over any element in javascript using foreach or map, you need to pass a unique key to JSX so that react can track that element in the virtual dom.
+
+```js
+names.map((name, index) => {
+return <Card key={`${name}-${index}`} name={name} />
+}
+```
+
 
 
