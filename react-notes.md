@@ -75,5 +75,29 @@ return <Card key={`${name}-${index}`} name={name} />
 }
 ```
 
+## Ordering of elements in destructuring
+
+- Ordering matters in destructuring an array because elements are indexed
+
+```js
+const [flat, setFlag] = useState(false);
+```
+
+- In case of destructuring an object, the ordering doesn't matter
+
+```js
+var student = {name: "jatin", age: 26};
+var {age, name} = student; // still the correct values would be assigned.
+```
+
+## useRef Hook
+
+useRef is used for the following purpose
+- If you want to define a variable whose value is preserved between re renders and it doesn't cause re render on changing the value
+- If you want to get a reference to a DOM element for the purpose of adding focus etc.
+
+### Things to remember
+- useRef returns an object with current property which is the current value of the object. You should always update this current value inside a hook like useEffect to avoid strange behaviour.
+- useRef object is only created during mounting of the component and its value is preserved throughout the lifecycle of the component.
 
 
