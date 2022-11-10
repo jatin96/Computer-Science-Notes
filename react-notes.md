@@ -125,5 +125,25 @@ const doubleNumber = useMemo(()=>slowFunction(input), [input]);
 
 ```
 
+## useCallback
+
+- This returns a memoized callback function
+- The given function would then not be allocated new memory on every re render.
+
+```js
+const onHandleClick = useCallback(e => {
+  setInput(e.target.value, 10)
+}, []);
+```
+In the above example, the onHandleClick would be allocated memory only once. 
+- useCallback is used for memory intensive functions which don't depend on the state.
+- Remember, whenever a component re renders. all the functions are recreeated. So, use useCallback whenever the recreation of a function is unnecessary. 
+- For every function you declare, try using useCallback everytime is possible.
+
+
+
+
+
+
 
 
