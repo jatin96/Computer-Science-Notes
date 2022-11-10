@@ -100,4 +100,30 @@ useRef is used for the following purpose
 - useRef returns an object with current property which is the current value of the object. You should always update this current value inside a hook like useEffect to avoid strange behaviour.
 - useRef object is only created during mounting of the component and its value is preserved throughout the lifecycle of the component.
 
+## Comparing two objects in javascript
+- Two objects in javascript are always compare based on their reference and not their value
+
+```js
+const obj1 = {name: "jatin"};
+const obj2 = {name: "jatin"};
+obj1 === obj2 // this will be false because they would be pointing to differente locations in memory
+```
+
+## Stateful and Stateless components
+- A component which has no state and is dumb is called a stateless component
+- A component which has some interaction with the state is called a stateful component.
+
+## useMemo hook
+- useMemo helps you remember the output for a particular intput i.e - it caches it.
+- For example, in leetcode the problem statement is converted from markdown to html then displayed on your screen
+- markdown --> html conversion is a costly operation. 
+- Everytime when we move to discussion and then again open problem statement, this costly conversion would take place. 
+- To optimize it, we can use useMemo hook which will memorize the output(html) for the input(markdown) and then use the value from the cache to increase performance.
+
+```js
+const doubleNumber = useMemo(()=>slowFunction(input), [input]);
+
+```
+
+
 
