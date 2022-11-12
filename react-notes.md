@@ -141,6 +141,45 @@ In the above example, the onHandleClick would be allocated memory only once.
 - For every function you declare, try using useCallback everytime is possible.
 
 
+## Cleanup in useEffect
+
+- The cleanup function is executed whenever the component is unmounted i.e - it is not visible on the screen
+
+
+```js
+useEffect({} => {
+  somefunction();
+  
+  return () => {
+  // cleanup. 
+  };
+}, []);
+```
+
+## Context API
+- This is used to avoid prop drilling
+- Prop drilling is sending state to lower components so that they can use those.
+- Prop drilling should only be used when you need to send the prop to immediate children only.
+- Context api creates a data layer to which all the components can talk and get the required data.
+- children is a reserved keyword in react. It means components that are present inside the DOM element of the node.
+
+```js
+import { createContext } from "react";
+
+const CategoryContext = createContext();
+export default function const CategoryProvider({children}) {
+return (
+  <CategoryContext.Provider>
+  {children}
+  </CategoryContext.Provider>
+)
+
+```
+
+
+
+
+
 
 
 
