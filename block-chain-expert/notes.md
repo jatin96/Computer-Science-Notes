@@ -129,11 +129,84 @@
 - exploited code : code vulnerabilities could also cause a problem to the blockchain.
 - **51% attack** : If the blockchain network is small, a single individual can get access to 51% resources and get consensus. He can then vote a wrong transaction to be accepted.
 
+## Proof of Work
+
+- Miners take transactions out of their transaction pool and try to do some proof of work on it.
+- They first check whether the transaction is valid or not by looking at its signature.
+- They also look at previous block to check whether there is no double spending or not.
+- Lets say the difficulty or bits is 20. Now, for a random hash to start with 20 zeros is very difficult. This is where nonce comes into picture.
+- The miners try to guess this nonce such that the hash finally starts with 20 zeros. This is the proof of work.
+- All the miners store their own version of blockchain.
+
+### Scenario 1
+- Let's say there are 3 miners who have their own up-to-date copy of blockchain network.
+- Miner1 verifies a transaction and is able to find the once.
+- He then submits this to the blockchain.
+- Other miners are listing, they see that the block submitted by miner1 is valid, and they update their local copy of blockchain.
+- If they were working on the same block, they stop their work and again try to pick a new transaction on the blockchain.
+
+### Scenario 2
+- If the block submitted by miner1 was invalid, the other miners continue to guess the nonce on the same transaction until someone finds the correct one.
+
+> This is a race for the miners. Whoever has better compute power has better change of guessing the once - hence better change to submit a block to the block chain.
+
+### Scenario 3
+- Two miners submit the same block at the same time. 
+- In this case we create fork chains.
+- When some new miners pull the block chain, some will receive one block chain some will receive another fork chain
+
+![fork chains](2022-12-09-01-41-33.png)
+- How will the network again resolve it into a flat chain?
+- This will take place when a miner submits a new block. If the miner submits a new block and it gets added to the green chain, it becomes longer.
+- The longer chain is then declared to be the valid blockchain, and all the miners who got a copy of yellow block chain have to pull again.
+
+![longest chain is valid](2022-12-09-01-44-26.png)
+
+### What do we mean by longest chain ? 
+- Longest chain in a bitcoin network is a chain which has all the valid blocks with highest cumulative difficulty/bit.
+- Longest chain decided not by length but by cumulative difficulty of mining.
+
+### Confirmation
+
+- number of blocks that has been added since your latest processing block.
+- This gives you an idea what is the probability that your block will be rejected.
+
+### Bits/difficulty
+
+- Bitcoin network changes the bits every 2 weeks.
+- Bitcoin network wants to have block addition time as 10 minutes.
+- If you have more miners, you have more compute power so this time would be less.
+- Then you have to increase the bits so that time is close to 10 minutes.
+- If the miners are less, the difficulty is reduced so that again, the time taken is 10 mins.
 
 
+### Your chances of mining a block
 
+- Let's say you have a single graphics card. 
+- The chances that you would be able to guess a nonce in 10 minutes before someone with a minin farm is less.
+- What can you do?
+- You can take part in Pool mining. 
+- A large pool of miners mine blocks together and share the reward based on the hash power someone was contributing.
+- One disadvantage of pool mining is that this reduces the decentralization of the network because now a large entity has a lot of power in the network.
 
+### More about Proof of Work
+- Sometimes a miner can also create an empty block and add it to the blockchain.
+- Let's say the miner has its transaction pool and is trying to add transaction to the block.
+- In the meantime, the miner also tries to verify if there was already a block submitted which had similar transactions which it has in its transaction pool.
+- It then removes these transactions from the pool.
+- If any of these repeated transaction enters his block, his block would be invalid.
+- But he can always create an empty block because he knows the previous block hash. He can add that empty block to the network too!
+- miners block on empty blocks when they are verifying their transaction pool for duplicates, so that they don't waste time and resources.
+- Probability of finding the nonce for empty block == probability to find nonce for a non-empty block
+- Empty blocks are also useful because they increase the security of chain by increasing its length.
 
+### Environmental Impact
+- There is a huge environment impact at a given time because a lot of miners do redundant work and waste resources.
+
+### How to hack Proof of Work
+- People try to get 51% network and try to create the longest chain with invalid blocks.
+- They can do it because they have enough miners to it.
+- Basically, you need to race against the network to continue this fradulant blockchain.
 
 
 
