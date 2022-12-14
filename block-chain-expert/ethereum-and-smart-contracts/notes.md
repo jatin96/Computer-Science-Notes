@@ -65,6 +65,57 @@
 - No need of real estate agents.
 - No need of lawyers.
 
+## ERC 20 Tokens
+
+- **Coin** : A coin is a currency that represents a blockchain as a whole. eg ETH
+- **Token** : A token is something which exists within that network. eg Tether
+- **ERC Tokens** : Fungible tokens on ethereum network which follow ERC 20 protocol
+- **Fungible Tokens** : Tokens whose number matters rather than the exact token. They can be interchanged. eg. I take a 10 rupee note from you and give another 10 rupee note. The denomination matters here, not the serial number of the note.
+- **Non Fungible Tokens** : unique tokens, tokens which cannot be exchanged. eg NFTs.
+- ERC 20 token can be created by anyone using a smart contract which follows the protocol.
+
+## ERC 20 Token use cases
+- **Crowdfunding** : Instead of going through the traditional funding route, some startups create ERC 20 tokens where you buy the tokens to invest in startups. If you own some tokens, it means you are owning a part of the company.
+- **Voting Rights** : Someone can distribute tokens to the public and only those people can vote who have that token. 
+- **Representations of ownership** : token represents some part of gold, car, property etc.
+- **Paying for features/DApps**
+- **Stable Coins** : Hold the token which is pegged to something. Even thought ETH can go up and down, stable coins remain stable.
+- **Enterprise software**
+- **Royalties** : Based on the percentage of ownership, the royalties are distributed in the form of tokens based on the smart contract.
+
+>A token is essentially a transaction which states that "xxxxxx address hold 3 tokens".
+
+## ERC 721 Tokens
+- Non-fungible tokens on Ethereum network that follow ERC 721 protocol.
+- ERC 721 Token can be created by anyone by deploying a smart contract obeying the protocol.
+- Each ERC 721 token has a unique id.
+- The token is connected with some metadata such as images, videos, sound, attributes etc.
+- The image mapped to this token can be changed also because typically that is not stored on the blockchain like a database.
+- They are useful to prove ownership of unique items.
+
+> you can use [etherscan.com](https://www.etherscan.com) to view the smart contracts
+
+## Blockchain Comparison
+
+![scalibility trilemma](image.png.png)
+
+- **Layer 1** : Refers to a base network like Bitcoin or Ethereum and its underlying infrastructure.
+    - It is very difficult to improve the scalibility.
+    - Can validate and finalize transactions without the need for another network.
+    - Eg. Solana, Bitcoin, Cardano, Ethereum.
+- **Layer 2** : Wrapper on top of Layer 1.
+    - Performs transformation off the main chain and reports it back to the main chain for validation.
+    - Have additional features like side chains etc.
+    - Can provide faster transaction processing time and low gas.
+    - Often lack decentralization due to limited adoption and usage.
+    - Eg Arbitrum, Optimism, Bitcoin lightning.
+    - Some of these use roll ups where you can bundle a bunch of transactions and submit them as one transaction on the main chain to save gas.
+
+
+
+
+
+
 
 
 
