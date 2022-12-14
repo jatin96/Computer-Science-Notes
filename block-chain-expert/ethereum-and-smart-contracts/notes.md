@@ -111,6 +111,44 @@
     - Eg Arbitrum, Optimism, Bitcoin lightning.
     - Some of these use roll ups where you can bundle a bunch of transactions and submit them as one transaction on the main chain to save gas.
 
+## Stable coins
+- relatively non-volatile crpytocurrency asset.
+- useful as a medium of exchange due to volatility of most crpytocurrencies.
+- can be thought as digital cash.
+- Maybe pegged to a currency like USD, gold etc.
+- Pursue price stability by maintaining reserve assets as collateral or through algorithmic formulas that are supposed to control supply.
+- Stable coin properties
+    - Relative stability
+    - Stability method
+    - Reserve assets
+- Core Use cases
+    - storage of value.
+    - medium of exchange.
+    - unit account - can be used to measure the current value of different assets. For eg, when you go to a grocery store everything is in USD.
+- Stability method
+    - Governed
+        - Requires human intervention to control the price
+        - considered centralized
+        - requires a central entity to inject collateral into the system
+        - eg thether
+    - Algorithmic
+        - smart contracts facilitates burning or minting of coins.
+        - requires no human intervention
+        - Eg. Dai
+
+- Reserve Assets
+    - Exogenous
+        - Collateral exists outside of the protocol.
+        - Tether uses USD as collateral.
+        - Dai uses multiple cryptocurrencies as collateral.
+    - Endogenous
+        - Collateral exists inside the protocol.
+        - Terra uses LUNA
+        - Using endogenous collateral is dangerous when people lose faith in collateral and stable coin at the same time.
+
+
+
+
 
 
 
