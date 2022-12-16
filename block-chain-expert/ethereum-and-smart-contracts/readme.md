@@ -146,6 +146,26 @@
         - Terra uses LUNA
         - Using endogenous collateral is dangerous when people lose faith in collateral and stable coin at the same time.
 
+## Oracles
+
+- Allows connecting blockchain to off chain data.
+- Smart contracts cannot access the third party data easily.
+- Oracles send the off chain data to the blockchain through a transaction so that it can be validated.
+- **Chainlinks** : Layer 2 solution on Ethereum which allows you to connect your blockchain to data sources. Chainlink is a oracle network.
+- There are some trusted nodes that chainlink talks to, to get the data. When you ask for off chain data from the blockchain network, chainlink talks to one of these trusted nodes to get you that data. 
+- These nodes then submit the data in the form of a transaction to the blockchain and after validation this data is made available.
+- **Usecase : Generating a random number**
+    - In games, we often need a random number generated fairly.
+    - random numbers need a seed.
+    - Everything on blockchain is publicly available.
+    - If a player sees the seed, then he can pass the same seed throught the function and get the random number.
+    - So what we can do is generate this seed off the chain and pass it to the blockchain using Oracles.
+    - Smart contracts cannot make api calls. They can only generate events.
+    - The off chain node listening to the events sees that the event is generated and then sends the random number to the blockchain.
+    - One problem is the player can control the off chain node because it is not in the blockchain and pass a random number which he knows.
+    - This is where chainlink comes into picture where chainlink randomly selects a trusted node to generate the random number.
+    
+
 
 
 
