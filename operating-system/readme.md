@@ -95,3 +95,92 @@
 
 ![example](2023-01-06-00-57-17.png)
 
+## Scheduling Algorithms
+
+### FIFO
+
+- First come, first serve.
+- Non - preemptive
+
+### Shortest Job First
+
+- The process with the shortest burst time is selected first.
+- Non - preemptive
+
+### Round Robin
+
+- This is preemptive.
+- Each process is given a time quanta, under which it should execute.
+
+## Memory Allocation
+
+### Storage
+- CPU can talk to the following storage spaces directly
+    - Registers : Smallest and fastest
+    - RAM : Slower but more space. RAM can talk to HDD/SSD
+    - Cache : Faster than RAM.
+
+
+### Execution of a Program
+
+- When a program is compiled, it is converted into a machine readable form.
+- Let's say a program when compiled takes 12Kb, Now you need 12Kb in RAM so that your code is loaded.
+- We need allocation and deallocation because RAM is finite.
+
+
+### Fixed Partition of RAM, Continous Allocation of process
+
+- The OS developers made fix partitions of RAM to load processes in these partitions.
+- A process cannot be broken.
+- the partition of the RAM is made based on the number and size of processes.
+- Each partition can hold only 1 process.
+- If the partition is 4MB and process needs only 2MB, 2MB is wasted. this is called internal fragmentation.
+- If the partitiona is divided variably, that is you allocate some space to a process and then to another process you allocate some space in a non contiguous manner, there would be some space left in between. This space might not be able to accomodate big processes. This is called external fragmentation.
+
+![internal fragmentation](2023-01-07-01-55-29.png)
+
+![external fragmentation](2023-01-07-01-55-52.png)
+
+
+### Dynamic Partition, Contiguous allocation
+
+- Since we are using dynamic partition, internal fragmentation is solved.
+- Limit on process size is also removed.
+- A disadvantage is when deallocation happens, holes would be created.
+- Now a process which needs more ram than the hole cannot be accomodated. Hence external fragmentation is not solved.
+
+![hole in RAM](2023-01-07-02-02-29.png)
+
+- The idea to solve external fragmentation is to use non contiguous allocation. 
+- Even before a process is loaded on the RAM, we break the process into chunks of a fixed size(say 4KB). This fixed size is known as a page.
+- The RAM is also divided into fixed pieces (lets say 4KB). This fixed size is called a page. 
+- **Page size == frame size** , then only this strategy makes sense.
+- The way, your process is loaded on the RAM, ready to be executed by the CPU.
+
+## How will CPU access data?
+
+- When CPU executes a process, Its PCB contains the program counter which shows which process is to be executed next. But we don't know the physical address or the frame no. 
+- That is why we need a mapping from page to frame, this is done using a page table.
+- We store the starting address of the frame, and the offset.
+- The offset tells us at which line inside that frame, we should resume the execution( in case the current process is stopped)
+
+![page table](2023-01-07-02-16-59.png)
+
+
+## Page Replacement Algorithms
+
+- Sometimes, for a page to fit in, you need to remove some pages from the RAM, so that CPU can access it.
+
+
+### FIFO
+
+![fifo](2023-01-07-02-30-52.png)
+
+
+### Optimal Page Replacement
+
+![opr](2023-01-07-02-33-03.png)
+
+### Least Recently Used
+
+![lru](2023-01-07-02-34-07.png)
