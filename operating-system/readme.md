@@ -184,3 +184,146 @@
 ### Least Recently Used
 
 ![lru](2023-01-07-02-34-07.png)
+
+
+## Threads
+
+- Basic unit of CPU execution.
+- Comprising of 
+    - Thread id
+    - program counter
+    - register set
+    - stack
+- A thread has a thread control block (TCB). This is linked to a PCB.
+
+![thread vs process](2023-01-07-11-08-58.png)
+
+### Benefits of Multithreading
+
+- **Responsiveness** - Your interactive application won't freeze even if a part of the code is taking a lot of time to execute.
+- **Resource sharing** - Resources like code and data are shared between threads so it is more economical.
+- **Exploits multiprocessor architecture** - Allows an application to have several threads of control within the same address. Context switching takes less time.
+
+## Shared memory systems
+
+- Multiple processes communicating with each other using the same region of memory. Processes can exchange information by reading and writing data to the shared region.
+
+## Examples of problems with Shared memory
+
+### Producer-Consumer Problem
+
+![producer consumer problem](2023-01-07-11-25-27.png)
+
+> Race condition: When different processes manipulate the same data concurrently and the outcome of execution depends on the particular order in which the access took place.
+
+
+## Critical Section Problem
+
+- Only 1 process would access the critical section at a time.
+- Each process must ask for permission to go to the critical section.
+
+### Solution to critical section problem
+
+Must satify the following three requirements
+
+- Mutual Exclusion - Only allow  1 process to enter CS at a time.
+- Bounded Waiting - Each process should have limited waiting time. It should not wait indefinitely to get access to the critical section. This bound is on the number of processes. For eg, if P1 is waiting for the critical section, at max it will wait for 10 processes to execute before it. After 10, we have to give P1 the critical section.
+- Progress - A progress has to be made, always.
+
+### Peterson's Solution
+
+- Classic software based solution.
+- May not work in modern computers.
+- Restricted to two processes.
+- We need 2 data items to be shared between process 1 and process 2.
+    - int turn --> Indicate whose turn it is to enter CS.
+    - boolean flag[2] --> indicates the process is ready to enter CS or not.
+
+
+![peterson's solution](2023-01-08-19-13-32.png)
+
+### Test and Set Solution
+- This is a hardware solution.
+- We have a test and set atomic method:
+```java
+boolean testAndSet(boolean target) {
+    boolean ret = target;
+    target = true;
+    return ret;
+}
+
+do {
+    while (testAndSet(lock));
+    // critical section
+    lock = false;
+    // remainder section
+} while(true);
+```
+
+## Semaphores
+
+- semaphores can have integer value.
+- using semaphores we can run many process together without causing race condition.
+- Types of semaphores
+    - binary : almost like mutex locks
+    - counting semaphores : can have more than 2 values.
+- We use two operations here, called wait and signal.
+- wait is denoted by P and signal is denoted by Q.
+- Semaphores don't ensure bounded waiting. 
+```java
+// wait() operation
+P(semaphore S) {
+    while(S <= 0);
+    S--;
+}
+
+//signal operation
+Q(semaphore) {
+    S++;
+}
+```
+
+### Counting semaphores
+- It can have values ranging over an integer.
+- It is used to control resources with multiple instances.
+- It doesn't ensure bounded waiting. To solve this
+    - we can push it to the waiting queue.
+    - But waiting too much in the waiting queue can cause starvation.
+
+## Deadlock
+
+- Two process waiting indefinitely for an event that can becaused by one of the waiting process.
+
+```java
+wait(s)
+wait(q)
+// some work
+signal(s)
+signal(q)
+
+wait(q)
+wait(s)
+// some work
+signal(q)
+signal(s)
+```
+
+### Necessary Condition for Deadlock
+- Mutual Exclusion - There should be a resource which can be accessed by only one process at a time.
+- No preemtion - You should not have an option for pushing the process to waiting queue and unblocking it.
+- Hold and wait - There should be a process which is holding a resource and waiting for another resource.
+- Circular wait - processes waiting for resources in a circular fashion
+
+
+### Deadlock Detection
+
+- **Deadlock ignorance**
+    - Ignore the deadlock all together.
+    - This is done because deadlock detection is a complex process and deadlock occurence is rare.
+    - Your computer hangs less frequently and whenever it does, let the user handle it.
+- **Deadlock Prevention**: Try to negate one of the necessary conditions for deadlock
+- **Deadlock avoidance**: While allocating resource check if it is safe or unsafe. This is done by Bankers Algorithm
+- **Deadlock Detection**: Detect the deadlock initially and then remove it.
+
+
+
