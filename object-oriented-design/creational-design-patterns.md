@@ -125,6 +125,166 @@ class Sandwich {
 - You need validation before object creation (You can add that noOfBreads > 0 in build before creating the object.)
 
 ## Factory Design Pattern
+
+- Factory is a code unit which is responsible for creation of objects.
+- Let's say you want to write a code unit which gives the object of the desired database based on the string you pass. Something like this:
+
+```java
+void someFunction() {
+    if (database == "mysql") {
+        database = new MySql();
+    } else if (database == "mongoDB") {
+        database = new MongoDB();
+    } else if (database == "redis") {
+        database = new Redis();
+    }
+}
+```
+- Now, if you use similar if statement everywhere in your code and tomorrow you need to add another database, you would have to make changes to all the files. This can be a hassle.
+- When to use a factory pattern:
+    - Whenever I have an interface for whom there are multiple implementations and I need to select one of them based on the input.
+    - The only purpose of this class would be to create objects.
+- A factory will always return a new object.
+
+### Practical Factory
+
+```java
+// step 1: create an interface 
+interface TaxCalculationAlgorithm {
+    public int calculateTax(SalaryDetails salaryDetails);
+} 
+
+// step 2: implement the interface based on different functionalities.
+class OldRegimeTaxCalculationAlgorithm implements TaxCalculationAlgorithm {
+    public int calculateTax(SalaryDetails salaryDetails) {
+        // do tax calculation
+        return tax;
+    }
+}
+
+class NewRegimeTaxCalculationAlgorithm implements TaxCalculationAlgorithm {
+    public int calculateTax(SalaryDetails salaryDetails) {
+        // do tax calculation
+        return tax;
+    }
+}
+
+// step 3: create a factory which returns the implementation you need based on the input.
+public class TaxCalculationAlgorithmFactory {
+    public static TaxCalculationAlgorithm getTaxCalculationAlgorithm(TaxRegime regime) {
+        if (regime == TaxRegime.OLD) {
+            return new OldRegimeTaxCalculationAlgorithm();
+        } else if (regime == TaxRegime.NEW) {
+            return new NewRegimeTaxCalculationAlgorithm();
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+}
+
+public static void main(String args[]) {
+    TaxCalculationAlgorithm algo = TaxCalculationAlgorithmFactory.getTaxCalculationAlgorithm(TaxRegime.OLD);
+}
+
+```
+
+### Factory Method Design Pattern
+
+- In factory method design pattern, you have a class which is responsible for creating objects. 
+- The return type of this factory method will be an abstract class. 
+- Based on what class is implementing the factory method, the return type can be specified.
+- All the return types of the factory method will be sub classes of the return type of factory method.
+
+![factory method design pattern](2023-02-04-14-57-26.png)
+
+### Abstract Factory Design Pattern
+- Let's say you have different UIs like material ui, ios and dark ui. All of these methods to create their own buttons, creator, create drop down etc.
+```java
+public class ThemeFactory {
+    public static Theme createTheme(String themeName) {
+        if (theme == "material") {
+            return MaterialUITheme();
+        } else {
+            return IosTheme();
+        }
+    }
+}
+
+public abstract class Theme { 
+    String authorName;
+    String primaryColor;
+    int lastUpdateDate;
+    String name;
+
+    public abstract ThemeComponentFactory createThemeComponentFactory();
+}
+
+public class MaterialUITheme extends Theme {
+    public ThemeComponentFactory createThemeComponentFactory() {
+        return new MaterialThemeComponentFactory();
+    }
+}
+
+public class IosUITheme extends Theme {
+    public ThemeComponentFactory createThemeComponentFactory() {
+        return new IosThemeComponentFactory();
+    }
+}
+
+interface ThemeComponentFactory {
+    Button createButton();
+    Menu createMenu();
+}
+
+class MaterialThemeComponentFactory implements ThemeComponentFactory {
+    public Button createButton() {
+        // create and return material ui button here.
+    }
+
+    public Menu createMenu() {
+        // create and return material ui menu here.
+    }
+}
+
+class IosThemeComponentFactory implements ThemeComponentFactory {
+    public Button createButton() {
+        // create and return ios ui button here.
+    }
+
+    public Menu createMenu() {
+        // create and return ios ui menu here.
+    }
+}
+
+public class Button {
+
+}
+
+public class MaterialButton extends Button {
+
+}
+
+public class IosButton extends Button {
+
+}
+
+public class Menu { 
+
+}
+
+public MaterialMenu extends Menu {
+
+}
+
+public IosMenu extends Menu {
+
+}
+
+
+```
+
+
+
 ## Prototype Design Pattern
 
 
