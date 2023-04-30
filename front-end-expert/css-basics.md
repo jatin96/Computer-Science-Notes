@@ -87,3 +87,9 @@ a::before { content: '>'} /*before adds and an element before the a tag, in this
 ```
 
 ![before](2023-04-27-22-54-39.png)
+
+## Selector Specificity
+
+When you have conflicting styles, the most specific style will be taken. If specificity is same, the last style will be taken.
+
+> !important : this overrides the selector specificity. You should avoid using this.
