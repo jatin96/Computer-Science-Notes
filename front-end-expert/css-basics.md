@@ -93,3 +93,47 @@ a::before { content: '>'} /*before adds and an element before the a tag, in this
 When you have conflicting styles, the most specific style will be taken. If specificity is same, the last style will be taken.
 
 > !important : this overrides the selector specificity. You should avoid using this.
+
+## CSS Units
+- % : to be relative to parent
+- vw/vh - to be relative to viewport
+- rem - for close to absolute values (default page is 16px, unless someone changes it)
+- em - to scale with font sizes
+- px - for small values, last resort because it hampers accessibility.
+
+Tips:
+- In general prefer widths in terms of percentage so that your elements don't overflow.
+- Dont use px for font sizes because it will not scale if the user has changed the default font size of their browser.
+- Prefer using rgb() rather than hex value because it is easy to read.
+ 
+## Block vs Inline:
+
+Block elements default to
+1. taking entire width of the parent 
+2. default to new line
+
+Inline elements:
+1. Take the width and height of of the content.
+2. You cannot change the width and height.
+
+> You can change the behaviour using display: inline/inline-block/block attribute property.
+
+inline-block :
+1. These do not default to new line
+2. You can change the width of the element
+
+Example is paragraph
+![block example](2023-04-30-13-00-32.png)
+
+## The box model
+- By default, vertical margins are collapsable - the maximum margin between two elements aligned vertical will be taken.
+- By default, horizontal margins add up - the margin between two elements aligned horizontally is the sum of margins of both the elements.
+- margin: auto means you let the browser handle the margins. This is usually used to center the element horizontally.
+- vertical margins and padding have no effect on inline elements.
+
+![box model](2023-05-14-21-04-44.png)
+
+## Box sizing
+
+When we say width: 100%, we are actually setting the width of the content. When you have a border and padding, these add up. Hence, you will see that the element would occupy more width than you set because the border and padding would add up.
+You can use ```css width: calc(100% - border size)``` but this doesn't look neat. Another way to handle this is to use ```css box-sizing: border-box``` property. This makes the width take into consideration the border and the padding as well.
