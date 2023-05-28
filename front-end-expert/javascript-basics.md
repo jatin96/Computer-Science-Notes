@@ -85,3 +85,103 @@ console.log('abc' == NaN) // this is false because when abc is coersed to a numb
 - If both the values are null or both the values are undefined, return true.
 - If both the values are objects, return true of they are the same object else return false.
 
+### Type Coercion
+
+Conversion of an object from one type to another implicitly during equality check or explicit is called type coercion.
+
+> Implicit type conversion: coercion  and explicite type conversion: type casting.
+
+## Syntactic Sugar and Modern Javascript
+
+### Inline functions
+
+Sometimes it's beneficial to use inline functions when you only need the function as a callback or to do some operation.
+```js
+const arr = [1, 2, 3, 4];
+
+const doubled = arr.map(doubleFunction);
+
+function doubleFunction(int num) {
+    return 2 * num;
+}
+
+// same code using inline function
+const double = arr.map(function(num) {
+    return num * 2;
+})
+
+// using arrow function
+const double = arr.map(num => num * 2);
+```
+
+### Destructuring
+
+```js
+const [first, second, ...rest] = arr;
+```
+
+For objects:
+```js
+const person = {
+    name: 'Jatin',
+    age: '27',
+    company: 'Foo'
+}
+
+const { name } = person;
+const {name: firstName, company='Google', ...rest} = person;
+
+function printName({name}) {
+    console.log(name);
+}
+
+printName(person);
+```
+Spread operator:
+
+```js
+const arr = [1, 2, 3, 4];
+function add(x, y) { // only first and second value of arr will be used. 
+    console.log(x + y);
+}
+
+add(..arr);
+```
+
+### Template Literals
+
+```js
+console.log(`Hello ${name}`);
+```
+
+### Nullish Coalescing
+
+```js
+const name = 'Jatin';
+const defaultName = name != null ? name: 'Default Name';
+// using null coalescing
+const defaultName = name ?? 'Default Name';
+```
+
+### Optional chaining
+Optional chaining prevents runtime errors when you are not sure if a value can be undefined or null. You can use optional chaining to write fallbacks in case it is. In the example below, if the entire expression is undefined or null, we would return 'Foo' and no runtime error would happen.
+
+```js
+const person = {
+    name: 'jatin'
+}
+
+console.log(person?.company?.website ?? 'Foo') // person?.company means that if person.company is undefined instead of throwing error make the whole thing undefined.
+```
+
+### Short circuit evaluation
+
+```js
+const shouldRunCode = true;
+
+function logWorld() {
+    console.log('Hello World');
+}
+
+shouldRunCode && logWorld();
+```
