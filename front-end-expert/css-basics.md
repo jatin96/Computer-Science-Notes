@@ -229,3 +229,82 @@ See the example below:
 ### Mobile First Design
 
 It is generally a good idea to design your website with mobile design as the primary usecase. This is because it is easy to scale up a website than scale down and since more and more websites are consumed on mobile, it makes sense to optimise this first.
+
+## Animations
+
+![transitions](2023-05-25-00-16-05.png)
+![animations](2023-05-25-00-16-36.png)
+![keyframes](2023-05-25-00-17-03.png)
+
+
+## CSS Variables
+
+CSS variables help you create variables which can be used across your project. Usually, you assign the variables in a ```css :root {}``` pseudo class.
+
+```css
+:root{
+    --main-color: #ff0000;
+}
+
+h1 {
+    color: var(--main-color);
+}
+```
+
+## Frameworks and Preprocessors
+
+- Frameworks: Pre-written code that can be used
+- Preprocessors: Add language functionality
+
+### Common Frameworks
+
+- Tailwind: customizable utility classes
+- Bootstrap: Responsive pre-built components, grid layout system.
+- Materialize: Follows Google Material UI
+- Foundation: Highly flexible UI components
+
+You usually choose the design system based on the UI appearance.
+
+### Common Preprocessors
+- Sass: variables, mixins, @extends, nesting, looping
+- LESS: JS based, less popular
+- Sylus: similar to sass.
+- PostCSS: highly customizable plugin collection
+
+### Should you use frameworks and preprocessors?
+
+Frameworks: Great for quick development but make sure you customize the component so that your website looks unique.
+Preprocessors: Usually use them to simplify CSS
+
+## CSS Methodologies and Best Practices
+
+### Common Themes
+- Stay consistent
+- Keep separation from HTML
+- Focus on responsive design, avoid absolute
+- Respect the cascade, avoid !important
+- Don't repeat your code (DRY)
+
+### Block Element Modifier(BEM)
+
+![BEM](2023-05-25-00-33-22.png)
+
+### Object Oriented CSS
+
+![OOCSS](2023-05-25-00-34-59.png)
+
+### Atomic CSS
+
+![ACSS](2023-05-25-00-35-54.png)
+
+### Scalable And Modular Architecture for CSS (SMACSS)
+
+![](2023-05-25-00-36-51.png)
+
+### Inverted Triangle CSS(ITCSS)
+
+![](2023-05-25-00-39-00.png)
+
+## Performance Concerns
+
+![performance concerns](2023-05-25-00-43-30.png)
