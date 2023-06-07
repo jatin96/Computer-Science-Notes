@@ -185,3 +185,15 @@ function logWorld() {
 
 shouldRunCode && logWorld();
 ```
+
+## Connecting JS to HTML
+
+```<script>``` tag is used to connect js to html.
+
+This tag blocks the browser from rendering the rest of the DOM until the script has finished downloading and executing. There are two ways to change this behavior : 
+1. **defer**: Fetch the script asynchronously without blocking the page. Only execute the script after the DOM has finished being parsed
+2. **async**: Fetch the script asynchronously without blocking the page. Whenever the script is ready, stop parsing the DOM and start executing the script.
+
+Traditionally, the script tag was placed as the last line of body. This is slower because the script would only be downloaded after the DOM has been parsed. If we use ```defer```, the script would be downloaded asynchronously.
+
+
