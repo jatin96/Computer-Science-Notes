@@ -196,4 +196,105 @@ This tag blocks the browser from rendering the rest of the DOM until the script 
 
 Traditionally, the script tag was placed as the last line of body. This is slower because the script would only be downloaded after the DOM has been parsed. If we use ```defer```, the script would be downloaded asynchronously.
 
+## DOM Manipulation
+
+Using Javascript to change the content, structure or style of the page. There are various properties and functions available to do this.
+
+## Event Driven Programming
+
+ A Pradigm when the code runs in response to events, usually initiated by the user.
+
+ ```js
+ button.addEventListner('click', onClick);
+
+ function onClick(event) { // every event listner has a event parameter.
+    console.log(event);
+ }
+ ```
+
+ ### Event propagation
+
+ When you click on a button the control goes from the body to the clicked target in order. This is called capture phase. Once the target is reached, the event is fired. This is called the targetting phase. Post that, the flow goes back up and this is called bubbling phase. In bubbling phase, if you had an event on the parent nodes like body, those will get fired as well.
+
+ ### How to add and eventListner
+
+ ```js
+ element.addEventListner(eventName, callback, useCapture); // useCapture means fire the callback during the capture phase rather than the bubbling phase.
+ ```
+
+ At any point during propagation, an event listner can call ```event.stopPropagation``` to stop the propagation process.
+
+ ### Common events
+
+ ```js
+ window.addEventListner('keydown', event => { // logging key press
+    console.log(event.code);
+ } )
+
+ scrollable.addEventListner('scrollable',  event => {
+    console.log(event.target.scrollTop) // logs how far you have scrolled
+ })
+ ```
+
+ ### Event Delegation
+
+ The process of using a single event listner on a parent element to manually delegate events to children, rathe than using event listners on each child.
+
+ ## Promises
+
+A promise is an object used for asynchronous operations. These objects are the ones for which we might not know the value yet.
+A promise can have three states : pending, fulfilled, rejected.
+
+```js
+const promise = new Promise((resolve, reject) => {
+    setTimeout(() => reject(new Error('Something went wrong')), 1000);
+});
+
+promise.then(value => console.log(value)).catch(error => console.log('Oh no ' + error));
+
+const promise = Promise.resolve(3);
+
+promise
+    .then(value => value * 2)
+    .then(value => value + 1)
+    .then(console.log)
+    .catch(error => console.log('Oh no ' + error))
+    .finally(() => console.log('Done'))
+
+// Create an array of promises. The array waits for all the promises to be resolved.
+Promise.all([Promise.resolve(3), Promise.resolve(4)]);
+
+// Wait for the first fulfilled promise and return
+
+Promise.any([Promise.resolve(3), Promise.resolve(4)]);
+```
+
+### Async - Await
+
+```js
+async function tester() {
+    try {
+        const value = await new Promise((resm rej) => setTimeout(() => res(3), 1000));
+    } catch(error) {
+        console.log('Oh No ' + error);
+    }
+}
+```
+
+## Working With the Server
+
+```js
+fetch(BASE_API).then(res => res.text()).then(console.log);
+```
+```js
+JSON.parse() : converts string to JSON object
+JSON.stringify() : converts JSON object to string
+```
+
+
+
+
+
+
+
 
