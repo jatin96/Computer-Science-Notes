@@ -291,6 +291,48 @@ JSON.parse() : converts string to JSON object
 JSON.stringify() : converts JSON object to string
 ```
 
+## Closures
+
+Functions have access to all of the variables at the time of definition, even if parent has returned.
+
+> let is block scoped and var is global scoped.
+
+## This
+
+```this``` refers to the context in which the current code is running.
+
+The value of this is determined at runtime
+1. At top level, this refers to the global object which is ```window```.
+2. In a object method, ```this``` refers to that object.
+3. in event listner, the ```this``` will refer to the object it is listening to.
+4. Arrow functions do not create their own context for ```this```, so this in an arrow function refers to the context just above it.
+
+### Binding objects to this
+
+```js
+function logThis(x, y) {
+    console.log(this);
+    console.log(x);
+    console.log(y);
+}
+
+const object = {
+    num: 10
+};
+
+const boundLogThis = logThis.bind(obj);
+
+boundLogThis(10, 20); // this -> obj
+
+logThis.call(obj, 10, 20) // If you don't want to bind but call the function with an object as this only once.
+````
+
+
+
+
+
+
+
 
 
 
