@@ -325,7 +325,93 @@ const boundLogThis = logThis.bind(obj);
 boundLogThis(10, 20); // this -> obj
 
 logThis.call(obj, 10, 20) // If you don't want to bind but call the function with an object as this only once.
-````
+```
+
+## Class
+
+### Prototypal Inheritance 
+
+The inheritance model used in Javascript. The difference between this type of inheritance and classical inheritance is that prototypal inheritance objects only inherit from other objects, rather than using class blueprints.
+
+```js
+const person = {
+    isHuman: true
+};
+
+const child = Object.create(person) 
+/* this will set the __proto__ field to person. In javascript,
+ this is called prototypal inheritance.
+ We do not have permission to directly edit properties inside of 
+ [[Prototype]]. We have few methods exposed which can be used*/
+
+// alternately, we can also do
+child.__proto__ = person // this is considered a bad practice however.
+
+// How to copy properties from source to target
+const child = Object.assign(Object.create(person), {
+    age: 18
+});
+
+// Another approach
+Object.setPrototypeOf(child, person) // not very well optimized for browsers.
+
+// The prototype property is a reference to the parent object.
+const child = Object.create(person);
+child.age = 18;
+
+const john = Object.create(child);
+john.name = 'John';
+
+console.log(john.age) // gives 18
+
+child.age = 19;
+
+console.log(john.age) // gives 19
+
+// Prototypes of function
+
+const funcProto = Object.getPrototypeOf(() => {});
+console.log(Object.getOwnPropertyNames(funcProto)) // this prints all the properties of a function like bind, call, apply etc.
+
+const arrProto = Object.getPrototypeOf([]);
+console.log(Object.getOwnPropertyNames(arrProto)); // this prints all the properties of an array like length, find etc.
+```
+
+### Function Constructors
+
+A function intended to be used to construct an object using the ```new``` operatior.
+
+```js
+function Person(name) {
+    this.name = name;
+}
+
+Person.prototype = {
+    constructor: Person,
+    isHuman: true // all the objects created with new Person() will have this field as true.
+}
+
+const jatin = new Person('Jatin');
+```
+
+> ```console.log(jatin instanceof Person) //true. instanceof can be used to check if a const is an instanceof something.``` 
+
+### Polyfill
+
+If some functions are not defined. we can add custom functions using prototype to enhance the functionality of an object.
+
+```js
+Array.prototype.push = function(value) { // we have defined our own push method for Array. This is called polyfill.
+    this[this.length] = value;
+    this.length++;
+}
+```
+
+### Classes
+
+A javascript syntax to emulate the classic inheritance. This is just syntactic sugar on top of functional constructors so that new developers find it easy to write oop code in Javascript
+
+
 
 
 
