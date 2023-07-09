@@ -380,7 +380,7 @@ console.log(Object.getOwnPropertyNames(arrProto)); // this prints all the proper
 ### Function Constructors
 
 A function intended to be used to construct an object using the ```new``` operatior.
-
+ 
 ```js
 function Person(name) {
     this.name = name;
@@ -410,6 +410,33 @@ Array.prototype.push = function(value) { // we have defined our own push method 
 ### Classes
 
 A javascript syntax to emulate the classic inheritance. This is just syntactic sugar on top of functional constructors so that new developers find it easy to write oop code in Javascript
+
+## Currying
+
+The process of transforming a function to treat its parameters as a sequence of individual function calls that each take one parameter. For example, func(a, b, c) would become func(a)(b)(c)
+
+```js
+function sum(a, b, c) {
+    return a + b + c;
+}
+
+function substract(a, b, c) {
+    return a - b - c;
+}
+
+function curry(func) {
+    return (a) => (b) => (c) => func(a, b, c);
+}
+
+const curriedSum = curry(sum);
+
+curriedSum(10)(20)(30);
+// currying is mostly not used. But can be useful when you want to save a parameter 
+
+const addFour = curriedSum(4);
+
+console.log(addFour(10)(10)); // no need to add a '4' as parameter in all the calls of addFour
+```
 
 
 
