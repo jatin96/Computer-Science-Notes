@@ -168,6 +168,112 @@ The advantage of MVCC is to eliminate locking of rows and enhance performance.
 
 https://www.youtube.com/watch?v=iM71d2krbS4&ab_channel=CameronMcKenzie
 
+## Indexing
+
+It is a data structure techique to quickly retrieve and access data in database.
+- primary key is indexed by default
+- we can create indices on other columns to help retrieve data based on those fields faster.
+
+Without indexing, you would need to iterate the entire table to get to the data row, resulting in a time complexity of O(number of rows). Rows in a database can be huge, so this is not scalable.
+
+## Alternative 1  
+What if we create a hashmap with key as the column and the value as the address of the row?
+
+Disadvantage:
+- A lot of storage will be used
+    - 4 bytes per entry in HM * 10^9 rows = 4GB which is huge for RAM
+- Range queries won't be optimized
+    - Lets say we want rows with sid between 10 and 10^6 and total sids present are sparse and only 10^3.
+    - We still would need to access all rows between 10 and 10^6 which is not optimal
+
+
+## Alternative 2
+What if we have data sorted? That can help in range queries
+What if we store the data in a BST?
+
+![BST](image-1.png)
+
+![disk access](image-2.png)
+
+Advantages:
+1. Can be stored in disk
+2. Rabge queries are optimal
+
+Disadvantages:
+1. Too much disk I/O
+
+Note: Hashmaps cannot be stored in disk because the data access is random and disk is more suitable for sequential disk reads.
+
+## Alternative 3
+
+Page: Smallest unit of fixed length contiguous block of physical memory
+lets assume it is 4 KB
+Size of 1 Node in BST << 4 KB
+Therefore it makes sense to transfer more nodes together to RAM rather than just transfering the node requested.
+
+B-tree: m-way tree which can have atmost m children and can store m - 1 values in a single node.
+- Generalized form of BST
+- Node values are sorted
+- Node can have multiple values
+
+TC: O(height of tree)
+
+Also called FAT tree 
+
+![B tree](image-3.png)
+
+Advantages:
+1. Less disk access as compared to BST
+
+Insertion in B tree:
+![insertion](image-4.png)
+
+![insertion 2](image-5.png)
+
+# ACID properties
+
+Why we need?
+So that we can ensure correctness and consistency of the data
+
+## Atomicity
+
+All changes to database are performed as a single operation
+
+## Isolation
+
+All the change to database happen in isolation. This is handled by the locking mechanism
+
+1. Row level locking helps ensurane isolation
+2. Column level locking is given by NoSQL DBs.
+
+![example of isolation](image-6.png)
+
+
+## Durability
+
+Transactions that have been committed will be survive permanently.
+- Updates will be stored in disk
+
+## Consistency
+Data is consistent before and after the transaction has been committed.
+This is ensured by the developer while other properties are ensured by the database
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
