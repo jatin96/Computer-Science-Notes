@@ -258,6 +258,56 @@ Transactions that have been committed will be survive permanently.
 Data is consistent before and after the transaction has been committed.
 This is ensured by the developer while other properties are ensured by the database
 
+# Schema Design
+
+Schema design is a way to document the design of the database and helps in communicating how the database will be designed before actually implementing the design.
+In schema design, we should use a common language of design which is understood by industry. This is done using UML diagrams which defines a language through which we can represent the database visually. This removes ambiguity from the discussion.
+
+Important UML diagrams
+1. Use case diagram
+2. Sequence Diagram
+3. Activity Diagram
+4. Class Diagram
+
+
+## Use Case Diagram
+
+- Different set of use cases that are supported by a software system
+- Who is going to use those services
+
+### Actors
+- Different entities which interact with the system to do actions
+
+### How to draw use case diagram
+- Create a box representing the entire software
+- ovals represent the use case
+- actors represent the customer, admin etc who will interact with the system
+- arrows from actor to use case means that actor will perform that use case
+- arrow with includes - If use Case A is needed to perform use case B, then A ->(includes) B For example checkout -> (includes) Payment
+- extends - If for a particular use case A, we have multiple sub-uses like B and C. For example, signup <-(extends) SSO, signup <-(extends) email etc.
+
+![use case diagram](image-7.png)
+
+## Class diagram
+- Represents differen entities that are there in the system
+    - Class
+    - interface
+    - abstract class
+- Also defines the relationship between the entities
+- Class
+    - name of class
+    - attributes - you need to know modifier, data type and name. Symbols:
+        - \+ : public
+        - \- : private
+        - \* : proctected
+        - private int age: -> - age : int
+    - methods
+        - public Animal getAnimal(String name, int count) -> + getAnimal(String,int): Animal
+        - We represent the method signature. Method signature never involves name of the parameter.
+
+        
+
+
 
 
 
