@@ -257,4 +257,15 @@
 - Router routes based on IP address. Works on network layer.
 
 
+## Sockets
+
+- Socket is one end of a two way communication
+- Server creates a socket and then client also creates a socket and connects to it.
+- Sockets are used for inter process communication
+- When client's socket connects to the server's socket, the connection is established
+- Sockets enable the client - servers to talk over the network
+- A socket's address is IP + port
+
+
+
 

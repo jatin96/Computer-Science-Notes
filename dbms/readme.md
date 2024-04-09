@@ -287,24 +287,6 @@ Important UML diagrams
 - extends - If for a particular use case A, we have multiple sub-uses like B and C. For example, signup <-(extends) SSO, signup <-(extends) email etc.
 
 ![use case diagram](image-7.png)
-
-## Class diagram
-- Represents differen entities that are there in the system
-    - Class
-    - interface
-    - abstract class
-- Also defines the relationship between the entities
-- Class
-    - name of class
-    - attributes - you need to know modifier, data type and name. Symbols:
-        - \+ : public
-        - \- : private
-        - \* : proctected
-        - private int age: -> - age : int
-    - methods
-        - public Animal getAnimal(String name, int count) -> + getAnimal(String,int): Animal
-        - We represent the method signature. Method signature never involves name of the parameter.
-
         
 
 
