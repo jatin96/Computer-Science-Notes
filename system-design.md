@@ -31,3 +31,39 @@ Source: bytebytego newsletter
 - Uber used sliding window to measure the availability spikes in a rolling window. If the spikes in the current window is more than the threshold, the request is short circuited and that cache node is made unavailable. This reduces the latency penalty since the request was bound to go to DB anyways due to the cache node going down
 
 source: [Do we need to use different API gateways for PC, mobile and browser separately?](https://blog.bytebytego.com/p/how-uber-uses-integrated-redis-cache?utm_source=post-email-title&publication_id=817132&post_id=142949172&utm_campaign=email-post-title&isFreemail=true&r=lz1jk&triedRedirect=true&utm_medium=email)
+
+## 9 Best Practices for building microsercvices
+
+#### Design For Failure
+A distributed system with microservices is going to fail.
+
+You must design the system to tolerate failure at multiple levels such as infrastructure, database, and individual services. Use circuit breakers, bulkheads, or graceful degradation methods to deal with failures.
+
+#### Build Small Services
+A microservice should not do multiple things at once.
+A good microservice is designed to do one thing well.
+
+#### Use lightweight protocols for communication
+Communication is the core of a distributed system.
+Microservices must talk to each other using lightweight protocols. Options include REST, gRPC, or message brokers.
+
+#### Implement service discovery
+To communicate with each other, microservices need to discover each other over the network.
+Implement service discovery using tools such as Consul, Eureka, or Kubernetes Services
+
+#### Data Ownership
+In microservices, data should be owned and managed by the individual services.
+The goal should be to reduce coupling between services so that they can evolve independently.
+
+#### Use resiliency patterns
+Implement specific resiliency patterns to improve the availability of the services.
+Examples: retry policies, caching, and rate limiting.
+
+#### Security at all levels
+In a microservices-based system, the attack surface is quite large. You must implement security at every level of the service communication path.
+
+#### Centralized logging
+Logs are important to finding issues in a system. With multiple services, they become critical.
+
+#### Use containerization techniques
+To deploy microservices in an isolated manner, use containerization techniques.
