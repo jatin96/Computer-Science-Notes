@@ -67,3 +67,19 @@ Logs are important to finding issues in a system. With multiple services, they b
 
 #### Use containerization techniques
 To deploy microservices in an isolated manner, use containerization techniques.
+
+## How Oauth 2.0 works
+
+1. User clicks on login button
+2. Client opens a Google(or any other) login dialog in the user agent(browser). In this case Google will be the authorization server
+3. User logins in the dialog.
+4. The authorization server returns a authorization code which the client can use to obtain the access token
+5. The client then verifies its identity and uses the authorization code to obtain the access code.
+
+Note: The access tokens can be of any format but the most common one used in JWT format. Access tokens are usually short lived for security and clients can use refresh tokens to renew the access tokens so that user is logged in without asking the user for credentials again.
+
+Advantages of OAuth:
+1. Access tokens avoid extra DB calls because the access token itself contains the user information which can be decrypted.
+
+![Oauth flow diagram](image.png)
+
