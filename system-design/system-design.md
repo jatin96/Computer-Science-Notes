@@ -83,3 +83,36 @@ Advantages of OAuth:
 
 ![Oauth flow diagram](image.png)
 
+## How SSO works
+
+SSO or single sign on is a protocol which helps users to access multiple applications without being prompted to enter the password again. This is how it works
+
+1. User tries to access a login, lets say xyz.com(service provider)
+2. The xyz.com redirects to SSO login page
+3. User enters the login id and password in the SSO page(Identity provider).
+4. Identity provider then returns the SAML assertion or JWT response containing information about the user and what user can access with the service provider.
+5. The browser forwards the SAML or JWT to the service provider
+6. service provider validates the SAML or JWT 
+7. Returns the protected resource.
+
+
+![SSO](image-2.png)
+
+
+![Google SSO](google-sso.png)
+Google SSO
+
+
+![Google SSO 2](image-1.png)
+
+Google SSO
+
+
+Ref
+- https://www.youtube.com/watch?v=O1cRJWYF-g4&ab_channel=ByteByteGo
+- https://www.youtube.com/watch?v=ZQY6dZyNVkI&ab_channel=StephenGrider
+
+
+
+
+
