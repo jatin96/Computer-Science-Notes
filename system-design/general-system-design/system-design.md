@@ -114,5 +114,26 @@ Ref
 
 
 
+## How to scale your system?
 
+- Stateless service: Make services stateless because they do not rely on server specific data.
+- Horizontal scaling: Add more servers so workload can be shared
+- Load balancers: Use load balancers to distribute load evenly across servers
+- auto scaling: balance realtime traffic based on policies
+- Caching: use caching to reduce load on database and handle repetitive requests at scale
+- replication: Scale read operations and improve fault tolerance.
+- sharding: Scale writes as well as reads
+- Aysnc processing: scale new resources by pushing time consuming operations to background
+
+## How to scale database?
+
+Use case: Holiday sale for amazon
+
+- Indexing: Locate specific information quickly based on the indexed column. e.b B tree index. Specifically useful for range queries. This avoids full table scans. Caveat: Indexes can increase read performance but slow down write performance since data needs to be modified. This is suitable for a read heavy system.
+- Matierialize views: Frequent query data is stored separately to reduce database load. This data needs to be refreshed periodically otherwise it would turn stale. This is used to build reports in tools like Tableau.
+- Denormalization: Store redundant data to reduce complexity of queries i.e joins. Store user data and post data in a single table to help build newsfeed faster in case of facebook, twitter etc.
+- Vertical scaling: Increase CPU, RAM and expand storage capacity. First step in scaling the database because it is straight forward. Caveat: this can be done upto a limit. 
+- Caching: Store frequently accessed data in a faster storage to reduce latency and load on db. Can be done in various layers like in-memory cache(redis). Caveat: Cache invalidation.
+- Replication: Create replicates to reduce read load. Synchronous replication: Write is slow because replication happens during write. Async replication: Less latency but not consistent.
+- Sharding: Table data is divided into shards. Eg instagram shards the data on user id. Sharding helps in horizontal scaling. Complexity: Deciding correcet shard key to avoid hotspots, querying is complex, resharding is difficult.
 
