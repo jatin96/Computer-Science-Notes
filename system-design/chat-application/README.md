@@ -71,6 +71,9 @@ Stateful services: Chat service uses web sockets so should be stateful
     - use global Id generator: Snowflake could be used but it is overkill for this problem
     - Use local Id generator: Local ID generation would be sufficient because we only need unique Ids for 1on1 and within  a group chat only.
 
+We cannot use timestamp as message_id because
+    - There is a possibility in group chat that multiple people sent messages at the same time so different users will see different ordering of messages.
+    - clock skew can occur because different servers have different clocks so timestamps might not be ordered currently.
 
 ### Choosing the Chat server
 - The clients need to choose the chat server to which they will open a web socket connection.
