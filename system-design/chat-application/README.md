@@ -82,6 +82,13 @@ Stateful services: Chat service uses web sockets so should be stateful
 ### 1 on 1 chat
 ![1 on 1 chat](image-4.png)
 
+
+### Message flow
+1. User A sends the message to chat server
+2. Chat server talks to another server to get the chat server for user B
+3. Chat server forwards messageA to chat server for B
+4. Chat server B sends back the message to user B
+
 ### Message synchronization across devices
 - A user can have multiple devices like phone and laptop.
 - Each device maintains a max_current_msg_id.
