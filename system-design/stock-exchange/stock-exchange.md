@@ -86,4 +86,38 @@ This is what makes the matching engine deterministic.
 
 ## Order manager
 1. Order manager manages an order's state.
+2. It also executes the risk checks
+3. It verifies the rorders against the wallets funds.
+4. It sends the orders to the seqencer and receives the executions from the matchign engine through the sequencer.
+5. Some non essential attributes are removed from the order before sending it to the matching engine.
+
+## Client gateway
+1. Client gateway does authentication, rate limiting, validations etc. 
+2. There will be different client gateways for different type of users. Intitutional clients will have very low latency client gateway.
+3. Client gateway lies on the critical path so it should be low latency. It is a tradeoff to decide what to include in the client gateway and what to leave.
+4. Colocation engine is a trading software running inside the exchange data center, which is the lowest latency possible. Brokers/dealers use these colocation engines. 
+
+## Market data publisher
+
+1. The market data publiser creates the order books and the candlestick charts from the executions received.
+2. This data is sent to the data service to which the clients subscribe to get the data.
+
+## Reporting
+
+1. Provide auditing, history, tax reporting, compliance etc.
+
+
+## API Design
+
+The following APIs would be needed:
+
+- POST /v1/order
+    - Parameters: symbol, side, quantity, price
+    - Response: id, creationTime, filledqty, remqty, status.
+- GET /v1/execution?symbol={:symbol}&orderId={:orderId}&startTime={:startTime}&endTime={:endTime}
+    - Parameters: symbol, orderId, startTime, endTime
+    - Response: Array of executions(id, orderId, symbol, quanty, price, type, side)
+- GET /v1/orderbook/symbol={:symbol}&depth={:depth}
+    - Response: bids and asks
+- GET /v1/candles?symbols={:symbols}&startTime={:startTIme}&endTime={:endTime}
 
