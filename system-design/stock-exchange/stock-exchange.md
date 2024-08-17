@@ -121,3 +121,146 @@ The following APIs would be needed:
     - Response: bids and asks
 - GET /v1/candles?symbols={:symbols}&startTime={:startTIme}&endTime={:endTime}
 
+## Data modoels
+
+Three main types of data:
+- Product, order and execution
+- Order book
+- Candlestick chart
+
+### Product 
+
+Product is the actual stock. For example, HDFC is one product. It can have the following attributes:
+1. Symbol
+2. Name
+3. description
+4. lotSize
+5. productId
+
+### Order
+
+Order is an instruction to buy or sell a stock at the best available price. It ensures that the stock buy/sell will be executed but doesn't gaurantee a specific price. An order can have the following attributes
+
+1. orderId
+2. productId
+3. price
+4. quantity
+5. status
+6. type
+7. userId
+8. transactionTime
+
+### Execution 
+
+Execution of an order is the actual fulfillment of the order placed by the client. It can have the following attributes:
+1. execId
+2. orderId
+3. price
+4. quantity
+5. type
+6. status
+7. userId
+8. transactionTime
+
+![order execution product](2024-08-15-23-26-46.png)
+
+Points:
+1. Orders and execution int the critical path are not stored in DB in order to achieve high performance. Trades are executed in memory. Orders and exections are archived to disk after the day closes.
+2. Reporter writes orders and executions to DB for reporting.
+
+### Orderbook
+
+How orders are executed? Watch this: https://www.youtube.com/watch?v=Kl4-VJ2K8Ik
+> Note: Exchange  tries to give the best price to the customer. It means if the customer is buying at the market, it will try to give the cheapest price possible. If the customer is selling, it will give the max price possible from the trades in order book.
+
+Notes:
+1. Buys are sorted in decreasing order because when you sell you want the highest price
+2. Sells are sorted in increasing order because when you buy you want the lowest price
+
+An efficient data structure for order book must satisfy:
+1. constant lookup time: We would need to find out how many shares are available at a particular price level.
+2. Fast add/cancel/execute operations at O(1).
+3. Query best BID/ASK.
+4. Iterate through price levels.
+
+The following data structure would work well:
+
+```java
+class PriceLevel {
+    private Price limitPrice;
+    private long volume;
+    private List<Order> orders; // Doubly linked list
+}
+class Book<Side> {
+    private Side side;
+    private Map<Price, PriceLevel> limitMap;
+}
+class OrderBook {
+    private Book<Sell> sellBook;
+    private Book<Buy> buyBook;
+    private Map<OrderId, Order> orderMap;
+}
+```
+- Adding new order means adding the order to the tail of doubly linked list which is O(1)
+- Deleting new order means deleting order from head of the list which is O(1);
+- Cancelling order means we will take the pointer value form orderMap against the orderID and use that to delete it from the respective doubly  linked list.
+
+### Candlestick
+
+```java
+class CandleStick {
+    private long openPrice;
+    private long closePrice;
+    private long lowPrice;
+    private long highPrice;
+    private long volume;
+    private long timestamp;
+    private int interval;
+}
+
+class CandlestickChart {
+    private LinkedList<Candlestick> sticks;
+}
+```
+## Step 3 Design Deep Dive
+
+### Performance
+- Latency should be very low for stock exchange.
+- Latency is measured in 99th percentile.
+- Latency can be reduced along the critical path in two ways:
+    - Reduce the number of tasks in critical path
+    - Reduce the time taken by each task in critical path
+
+Reducing the number of tasks in critical path: We will only have the essential components needed for a trade to execute:
+- gateway
+- order manager
+- sequencer
+- matching engine
+
+Reducing the time taken by each component in critical path:
+- Network request/response for all compoents would take single digit millisecond latency.
+- Disk IO by sequencer would take tens of milliseconds of latency.
+- This number is high for low latency trading systems.
+- Exchanges want to achieve latency in order of tens of microseconds by removing network and disk IO as much as possible.
+- This can be done by putting all the components on 1 server. This enables all the components to talk via mmap as as event store.
+
+
+
+
+Need for speed:
+
+1. millions of transaction per second system-wide
+2. everyone gets every message
+3. 
+Random points:
+1. Many systems need to get information about orders at the same time. We use multicast to send the messages simultaneously. When the matching engine sends info, all the entities should see it at the same time.
+2. The problem with multicast is that it is UDP hence loss of messages is there. We have certain retransmitters to take care of that.
+3. Retransmitters maintain all the transactions in memory for the day. So, in case there is a hardware problem in a port, the client can connect to a new port and the retransmitter can replay the messages for that client on the new port so that everyone is synchronized. This is called state machine replication.
+
+TODOS:
+1. Read state machine replication
+2. pre allocated ring buffers
+3. What is mmap
+
+
+
