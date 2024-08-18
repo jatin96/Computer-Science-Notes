@@ -243,6 +243,35 @@ Reducing the time taken by each component in critical path:
 - This number is high for low latency trading systems.
 - Exchanges want to achieve latency in order of tens of microseconds by removing network and disk IO as much as possible.
 - This can be done by putting all the components on 1 server. This enables all the components to talk via mmap as as event store.
+- Each component runs as the process on the single server.
+- Tasks are executed by the application loop which polls for tasks in a while loop.
+- Each application loop is single threaded and pinned to the CPU core
+    - Pinning means no context switch as the CPU is always available.
+    - No lock contention since there is only 1 thread that updates the states.
+- mmap is a way for processes to share memory in performant manner, it helps avoid disk access and brings it down to 0. mmap acts like a messaging bus.
+
+
+### Event Sourcing
+
+Event sourcin is a way to manage states of an application such that it allows us to regenerate the same output if we replay the states. In this approach, we store an immutable log of events in order of the timestamp in which they executed along with the event status.
+
+Sequencer is the component that reads the newOrderEvent from the ring buffer(which gets it from the gateway) and adds a sequence number to it and forwards it to the mmap/eventStore.
+We can have secondary sequencers as well for high availability.
+
+### High availability
+
+- We would need atleast 4 nines of availability.
+- We identify single points of failure and fix them. For example, we can have a passive matching engine.
+- Detection of failure and fail over to the backup instance should be fast.
+- Stateless services like gateway can be scaled horizontally by adding more services and hence reduce single points of failure.
+- Stateful services like matching engine would need the ability to copy states across replicas.
+- We can have the primary hot matching engine which consumes new events and sends output to the eventStore. We can have a secondary warm matching engine which consumes the exact same events as primary but doesn't send any output. When primary goes down, secondary can replace it immediately.
+- Since all of the components run inside a single server, we would need to create warm servers by replicating events across servers and machines. This is because in case the entire primary hot server goes down, we would need the warm server up quickly.
+
+
+
+
+
 
 
 
@@ -261,6 +290,12 @@ TODOS:
 1. Read state machine replication
 2. pre allocated ring buffers
 3. What is mmap
+4. application loop
+5. event sourcing
+6. What is reliable udp: 
+7. Study aeron for replication across machines and servers: https://github.com/real-logic/aeron
+
+
 
 
 
