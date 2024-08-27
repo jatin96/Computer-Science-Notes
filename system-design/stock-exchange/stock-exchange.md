@@ -287,6 +287,44 @@ For RTO, we would need automatic failover. For RPO, we would need to maintain mu
 
 ### Matching Algorithm
 
+The algorithm used is FIFO matching algorithm. The order which comes fist is fulfilled first.
+
+```java
+
+Context handleOrder(Orderbook orderBook, OrderEvent orderEvent) {
+    Order order = createOrderFromEvent(orderEvent);
+    switch (msgType):
+    case NEW:
+        return handleNew(orderBook, order);
+    case CANCEL:
+        return handleCancel(orderBook, order);
+    default:
+        return ERROR;
+}
+
+Context handleNew(OrderBook orderBook, Order order) {
+    if (order.side.equals(BUY)) {
+        return match(orderBook.sellBook, order);
+    } else {
+        return match(orderBook.buyBook, order);
+    }
+}
+
+Context match(Book<Side> sellBook, Order order) {
+    List<Order> marketOrders = sellOrders.limitMap.get(order.price).orders;
+    Iterator<Order> orderIter = getIterator(marketOrders);
+    remainingQty = order.quantity;
+    while (orderIter.hasNext() && remainingQty > 0) {
+        Quantity matched = min(orderIter.next.quantity, order.quantity);
+        order.matchedQuantity += matched;
+        remainingQty = order.quantity - order.MatchedQuantity;
+        if (order.quantity > orderIter.next.quantity) {
+            remove(order.next);
+        }
+        generateMatchFill();
+    }
+}
+```
 
 
 
@@ -311,6 +349,11 @@ TODOS:
 6. What is reliable udp: 
 7. Study aeron for replication across machines and servers: https://github.com/real-logic/aeron
 8. Read leader election algorithms
+9. Write how orderbook works using pen and paper.
+
+
+
+
 
 
 
