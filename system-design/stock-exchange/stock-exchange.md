@@ -268,8 +268,24 @@ We can have secondary sequencers as well for high availability.
 - We can have the primary hot matching engine which consumes new events and sends output to the eventStore. We can have a secondary warm matching engine which consumes the exact same events as primary but doesn't send any output. When primary goes down, secondary can replace it immediately.
 - Since all of the components run inside a single server, we would need to create warm servers by replicating events across servers and machines. This is because in case the entire primary hot server goes down, we would need the warm server up quickly.
 
+### Fault Tolerance
 
+Let's answer some questions:
 
+Q. There might be false alarms resulting in unnecessary failovers. Also, there might be bug in the code which will bring down backup instance as well if we fail over to it. How to tackle this?
+
+A. We first need to perform failovers manually when releasing a new system. Failover should also be part of integration test pipeline and only when failover is successful we should push the new code to prod. We can also use Chaos engineering.
+
+Q. How to decide which server to take over?
+A. We can choose any leader election algorithm. Raft is one such algorithm.
+
+Q. What about RTO and RPO?
+A. RTO stands for recovery time object which is the time a system can be down until significant harm is done to the business
+RPO stands for recovery point object which stands for the amount of data that can be lost until significant damage is done to the system.
+
+For RTO, we would need automatic failover. For RPO, we would need to maintain multiple copies of data because RPO needs to be near zero for stock exchange. Raft will make sure that state consensus is reached and when 1 leader is down the other leader should be able to function immediately.
+
+### Matching Algorithm
 
 
 
@@ -294,6 +310,8 @@ TODOS:
 5. event sourcing
 6. What is reliable udp: 
 7. Study aeron for replication across machines and servers: https://github.com/real-logic/aeron
+8. Read leader election algorithms
+
 
 
 
