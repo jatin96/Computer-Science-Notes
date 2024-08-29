@@ -326,9 +326,46 @@ Context match(Book<Side> sellBook, Order order) {
 }
 ```
 
+### Market Data Publisher Optimizations
 
+- Hedge funds use the Stock Exchange API to build their own candlestick charts for technical analysis.
+- Market data publiser service gets matched data from matching engine and publishes the data for the subscribers.
+- Ring buffer is used in MDP
 
+### Distribution Fairness
+- Each subscriber should get data at the same time to avoid unfair advantage.
+- This can be done using multicast with reliable UDP
+- We can also assign random order to the subscribers when the market opens
 
+### Multicast
+Different protocls to transfer data:
+1. Unicast: From one system to another.
+2. Broadcast: From one system to another in the same subnetwork.
+3. Multicast: From one system to another in other subnetwork.
+
+- Multicast is used where all the receivers are put in the same multicast group.
+- This ensures that all of them in theory receive the data at the same time.
+- Since multicast uses UDP, some of the data might be dropped.
+- There are ways of retransmission of data.
+
+### Colocation
+- Many stock exchanges offer services like putting the hedge funds server in their data center
+- This reduces the network delay and hence latency in placing the orders.
+- This is usually a paid VIP feature
+
+### Network Security
+- Isolate public services and private services. Have multiple read-only copies.
+- Use caching layer for infrequently updated data which will prevent database reads.
+- Harden the URLs agains Ddos attack. For example, https://www.nse.com/data?from=134&to=156 can be used by an attacker to get different types of data. Instead, a better url would be https://www.nse.com/data/recent which gives less control to the attacker.
+- Some form of allowlist/denylist is needed.
+- Rate limiting
+
+### Wrap Up
+Remember the following for designing a stock exchange:
+- Entire design is based on a single server or even a single process to reduce latency.
+- We need very low latency.
+- We need high availability and eventual consistency.
+- Multicast is used to ensure distribution fairness
 
 Need for speed:
 
@@ -350,6 +387,11 @@ TODOS:
 7. Study aeron for replication across machines and servers: https://github.com/real-logic/aeron
 8. Read leader election algorithms
 9. Write how orderbook works using pen and paper.
+10. What are L2/L3 orderbook data.
+11. What is ring buffer in stock exchange
+12. What is a subnet
+13. Read how retransmission works in multicast.
+14. How to prevent Ddos attacks.
 
 
 
