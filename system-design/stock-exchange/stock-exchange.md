@@ -367,6 +367,44 @@ Remember the following for designing a stock exchange:
 - We need high availability and eventual consistency.
 - Multicast is used to ensure distribution fairness
 
+## Q & A
+
+### How are reliable UDP and mmaps used in stock exchanges?
+
+In stock exchange system design, both mmaps (memory-mapped files) and reliable UDP play crucial roles, albeit in different areas:
+
+Mmaps in Stock Exchange System Design:
+
+Primarily used for high-performance data sharing and persistence.
+
+Sharing Market Data:
+
+Mmaps enable efficient sharing of large amounts of market data (e.g., order books, trade histories) between different components or processes within the exchange system.
+Multiple processes can map the same file into their address spaces, allowing direct access to shared data without the need for explicit inter-process communication (IPC) mechanisms.
+This can significantly improve performance and reduce latency, particularly in high-frequency trading environments.
+Persistent Storage:
+
+Mmaps can be used to efficiently persist critical data to disk. Changes made to the mapped memory region are automatically written back to the file, ensuring data durability.
+This can be useful for storing order books, trade logs, and other data that needs to be recovered in case of system failures.
+Reliable UDP in Stock Exchange System Design:
+
+Primarily used for low-latency market data dissemination.
+
+Market Data Distribution:
+As explained previously, reliable UDP enables the efficient and scalable broadcasting of real-time market data to a large number of subscribers.
+Its low latency, multicast support, and tolerance for some packet loss make it well-suited for this purpose.
+Key Points on how they complement each other:
+
+Mmaps for Internal Data Sharing: Mmaps are ideal for sharing data between different components within the exchange system itself, where high performance and low latency are critical.
+Reliable UDP for External Data Distribution: Reliable UDP is used to distribute market data to external subscribers (e.g., trading firms, brokers), where scalability and tolerance for occasional packet loss are important.
+Example Scenario:
+
+An exchange system uses mmaps to share the order book between its matching engine and risk management components. This allows for fast and efficient access to the latest order information.
+Simultaneously, the exchange uses reliable UDP to broadcast market data updates to subscribers, ensuring they receive timely information about trades and price changes.
+Conclusion:
+
+Both mmaps and reliable UDP are valuable tools in stock exchange system design. Mmaps enable high-performance data sharing and persistence within the system, while reliable UDP provides efficient and scalable market data distribution to external subscribers. By leveraging the strengths of both techniques, exchanges can build robust and performant systems that meet the demands of today's fast-paced financial markets.
+
 Need for speed:
 
 1. millions of transaction per second system-wide
