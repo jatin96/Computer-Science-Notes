@@ -405,6 +405,46 @@ Conclusion:
 
 Both mmaps and reliable UDP are valuable tools in stock exchange system design. Mmaps enable high-performance data sharing and persistence within the system, while reliable UDP provides efficient and scalable market data distribution to external subscribers. By leveraging the strengths of both techniques, exchanges can build robust and performant systems that meet the demands of today's fast-paced financial markets.
 
+### How do subscribers connect to a stock exchange?
+
+Common Connection Methods
+
+**Internet-Based Connections**
+
+Advantages:
+- Cost-effective
+- Accessible from anywhere with an internet connection
+- Suitable for retail investors and smaller institutions
+
+Disadvantages:
+- Higher latency compared to dedicated connections
+- Susceptible to internet congestion and outages
+- Security concerns due to public network exposure
+
+**Dedicated Leased Lines**
+
+Advantages:
+- Lower latency and higher bandwidth compared to internet connections
+- More reliable and secure
+- Suitable for professional traders and larger institutions requiring high-performance access
+
+Disadvantages:
+- Significantly more expensive than internet connections
+- Requires physical installation and infrastructure
+
+Co-location
+
+Advantages:
+- Ultra-low latency due to physical proximity to the exchange's servers
+- Access to specialized, high-speed data feeds
+- Suitable for high-frequency trading firms and other latency-sensitive participants
+Disadvantages:
+- Most expensive option
+- Limited availability due to physical space constraints
+- Requires specialized hardware and infrastructure
+
+
+
 Need for speed:
 
 1. millions of transaction per second system-wide
