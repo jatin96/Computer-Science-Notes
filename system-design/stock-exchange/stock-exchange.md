@@ -379,7 +379,6 @@ Random points:
 
 TODOS:
 1. Read state machine replication
-3. What is mmap
 4. application loop
 5. event sourcing
 6. What is reliable udp: 
