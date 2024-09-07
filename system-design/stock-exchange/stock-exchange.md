@@ -253,7 +253,8 @@ Reducing the time taken by each component in critical path:
 
 ### Event Sourcing
 
-Event sourcin is a way to manage states of an application such that it allows us to regenerate the same output if we replay the states. In this approach, we store an immutable log of events in order of the timestamp in which they executed along with the event status.
+Event sourcing is a way to manage states of an application such that it allows us to regenerate the same output if we replay the states. In this approach, we store an immutable log of events in order of the timestamp in which they executed along with the event status.
+Event sourcing allows us to regenerate the same state of the system in case of failures because we have stored each and every event in the database. We can just replay those events to generate the state of the system before the failure. It is also useful for auditing and compliance since a stock exchange needs to store each and every information.
 
 Sequencer is the component that reads the newOrderEvent from the ring buffer(which gets it from the gateway) and adds a sequence number to it and forwards it to the mmap/eventStore.
 We can have secondary sequencers as well for high availability.
@@ -337,6 +338,16 @@ Context match(Book<Side> sellBook, Order order) {
 - This can be done using multicast with reliable UDP
 - We can also assign random order to the subscribers when the market opens
 
+### State machine replication
+
+State machine replication is a fault tolerance practice where multiple replicas are maintained for each state machine and all of them process the data in the same way to reach the same final state. When one machine goes down, we can safely replace it with another machine. The replicas agree ont the final state using some consensus algorithm like Paxos or Raft.
+
+SMR is used in for orderbook and machine engine. Here are the key components of SMR in a stock exchange:
+1. State machines: This would be orderbook or matching engine
+2. Consensus Algorithm: Paxos or Raft
+3. Communication Layer: How replicas will talk to each other
+4. Failure detection and recovery: processes to identify failures and initiate recovery.
+
 ### Multicast
 Different protocls to transfer data:
 1. Unicast: From one system to another.
@@ -359,6 +370,9 @@ Different protocls to transfer data:
 - Harden the URLs agains Ddos attack. For example, https://www.nse.com/data?from=134&to=156 can be used by an attacker to get different types of data. Instead, a better url would be https://www.nse.com/data/recent which gives less control to the attacker.
 - Some form of allowlist/denylist is needed.
 - Rate limiting
+
+### Retransmitors in multicast
+Retransmitters are used in multicast to add reliability since multicast uses UDP with no assurity of packet delivery. Retransmittors use NACK which means that the receivers sends a NACK message to the sender. The sender then finds the missing packet using the NACK and sends it back to the receivers who sent the NACK or to the entire list of receivers.
 
 ### Wrap Up
 Remember the following for designing a stock exchange:
@@ -456,18 +470,9 @@ Random points:
 3. Retransmitters maintain all the transactions in memory for the day. So, in case there is a hardware problem in a port, the client can connect to a new port and the retransmitter can replay the messages for that client on the new port so that everyone is synchronized. This is called state machine replication.
 
 TODOS:
-1. Read state machine replication
-4. application loop
-5. event sourcing
-6. What is reliable udp: 
-7. Study aeron for replication across machines and servers: https://github.com/real-logic/aeron
-8. Read leader election algorithms
 9. Write how orderbook works using pen and paper.
-10. What are L2/L3 orderbook data.
-11. What is ring buffer in stock exchange
-12. What is a subnet
-13. Read how retransmission works in multicast.
 14. How to prevent Ddos attacks.
+15. Consensus algorithm/leader election are paxos or raft
 
 
 
