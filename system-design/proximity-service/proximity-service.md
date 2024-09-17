@@ -104,7 +104,8 @@ Distributes incoming traffic among different services. We will provide a single 
 
 ### Scalability
 
-- highly scalable because both services are stateless hence it is easy to scale by just adding more servers
+highly scalable because both services are stateless hence it is easy to scale by just adding more servers
+
 
 
 ## TODO
@@ -113,3 +114,5 @@ Distributes incoming traffic among different services. We will provide a single 
 2. How to design paginated APIs
 3. General API design best practices including request parameters :var type in path
 4. Type of DB for read and write heavy systems and why
+5. how geo spatial index works
+6. How geohash works
