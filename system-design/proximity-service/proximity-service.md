@@ -199,6 +199,63 @@ Quadtree
 
 ![geospatial inded table](image-3.png)
 
+### Caching 
+
+Note: Since mobile phone location constantly changes, location will not be a good cache key.
+
+### List of business Ids in a grid
+
+We can cache the list of business ids that belong to a geohash
+
+```sql
+SELECT business_id FROM geohash_index WHERE geohash LIKE `{:geohash}%`
+```
+
+```java
+public List<String> getNearbyBusinessIds(String geohash) {
+    String cacheKey = hash(geohash);
+    List<String> listOfBusinessId = Regist.get(cacheKey);
+    if (listOfBusinessId == null) {
+        listOfBusinessId = `Run query above`;
+        Cache.set(cacehKey, listOfBusinessIds, "1d");
+    }
+
+    return listOfBusinessIds;
+}
+```
+
+- When a business is added/deleted/updated, the database is updated and the cache is invalidated.
+Storage:
+200 million business
+3 precisions of geohash
+total storage = 8 * 200M * 3 = 5BG
+
+- The data can fit in 1 redis server, but still we will deploy global redis so that we can reduce cross continent latency and ensure high availability.
+
+## Regions and availability zones
+
+- The LBS can be deployed in multiple regions to keep the servers close to the users
+- This distributes the load and also ensures compliance needs of certain countries.
+
+## How to filter results based on open time or business type?
+
+We can filter the results first using geohash or quad tree. Since the resulting list is not big, we can filter out the relevant information later.
+
+## Final Design
+
+![final design](image-4.png)
+
+Flow:
+1. User sends location and radius as request
+2. the LBS finds the geohash length based on the radius and finds the neigbouring geohashes
+3. It makes a list of geohashes
+4. For each geohash, ti calls redis server to find the list of business ids for each geo hash and merges them
+5. Based on the list of business ids, the detailed business objects are fetched
+
+## View/update/delete business
+
+- First info in redis cache is checked. If absent, data from db is fetched and cache is updated.
+- In case of delete/update, change is made to db and cache is invalidated.
 
 ## TODO
 
