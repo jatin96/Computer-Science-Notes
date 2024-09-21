@@ -71,3 +71,8 @@ Database to store location history of user for machine learning usecases.
 
 #### Redis Pub/Sub server
 
+Redis pub/sub is light weight and a modern server could hold millions of channels
+These are used to send location updates to friends. The friends are subscribers who receive the location when there is update by the current user.
+
+#### How location update happens?
+
