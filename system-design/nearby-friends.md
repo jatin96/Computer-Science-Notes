@@ -157,6 +157,19 @@ When the connection is initialized, the client sends location of the user. Webso
 6. The final result is returned back to the client.
 7. For each friend, the server subscriber to friends topic. This is done for both active and inactive friends.
 
+##### User database
+
+- The user database will hold the user data like profile, friends etc.
+- We can use relational database with sharding on user_id to scale the database
+
+  ##### Location Cache
+
+  - Redis cache is used to store user_id and location
+  - There are 10 million active users with each entry requiring 100 bytes, it can fit in one server.
+  - But 10 million users sending request every 30 seconds means that QPS on redis server will be 334K, which is high. We can shard the data based on user_id and share the load among many redis servers.
+  - To improve availability, we can replicate the location data on each shard in a master-slave replication architecture.
+ 
+    
 
 ## TODO
 1. How to scale stateful servers behind a load balancer
