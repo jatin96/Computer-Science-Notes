@@ -260,8 +260,8 @@ Flow:
 ## TODO
 
 1. How to decide on sharding is needed or not based on estimations.
-2. How to design paginated APIs
-3. General API design best practices including request parameters :var type in path
-4. Type of DB for read and write heavy systems and why
-5. how geo spatial index works
-6. How geohash works
+2. General API design best practices including request parameters :var type in path
+3. Type of DB for read and write heavy systems and why
+4. how geo spatial index works
+5. How geohash works
+6. Go over the references
