@@ -76,3 +76,72 @@ These are used to send location updates to friends. The friends are subscribers 
 
 #### How location update happens?
 
+1. The phone sends location update to the load balancer
+2. load balancer forwards the location update to persistent connection on a websocker server for that client
+3. websocket server saves the location data to the location history database
+4. websocket server updates the latest location in the location cache. TTL is refreshed. the location is also saved in a variable in websocker connection handler for distance calculations
+5. the webcoker server publishes the new location to the user's topic/channel
+6. the location update is broadcasted to all the subscribers to the user's topic
+7. the friend's websocket connection handler would receive the location of the user
+8. on receiving the location, the websocker connection handler calculates the distance using the variable which has the the location for the friend and the location received from the subscriber.
+9. if distance is close, the new location and timestamp is passed to the subscriber's client.
+
+### API Design
+
+#### Web socket
+
+Periodic location update:
+Request: location, timestamp
+Response: nothing
+
+Client receives location update:
+Data sent: location, timestamp
+
+Websocket initialization:
+Request: location, timestmap
+Response: friend's location data
+
+Subscribe to a new friend:
+Request: WS sends Friend Id
+Response: location,timestamp
+
+Unsubscribe to a friend:
+Request: WS sends friend ID
+Response: nothing
+
+#### HTTP Requests
+add/delete friends, update profile etc.
+
+### Data model
+
+#### Location cache
+
+Redis is used for location cache. We store the following data:
+key: user_id
+value: location, timestamp
+
+We choose Redis and not some database because:
+1. Do don't need durable storage here because even if the cache goes down, it can be started with an empty cache which can warm up over time. It is a reasonable tradeoff.
+2. Redis gives super fast read wrtie speeds.
+
+The cache will have TTL per entry which will be updated as the data is updated. As soon as the TTL expires, the data is removed from the cache which means that the user is inactive.
+
+#### Location History database
+
+- We need database here since we need to persist the data for machine learning.
+- Since the write is heavy, Cassandra can be used. 
+- We can also use Relational database but sharding would be required on user_id
+
+### Design Deep Dive
+
+#### How will each component scale?
+
+##### API server
+
+These are stateless and can scaled by adding more servers or autoscaling them by increasing CPU or memory.
+
+##### Websocket servers
+
+
+
+
