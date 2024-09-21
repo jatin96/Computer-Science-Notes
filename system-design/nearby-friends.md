@@ -142,6 +142,24 @@ These are stateless and can scaled by adding more servers or autoscaling them by
 
 ##### Websocket servers
 
+Websocket connections are stateful and scaling them is complex. We first need to drain the traffic from the servers from the load balancer side before adding a new server which has more hardware resources. 
 
+##### Client initialization
+
+The clients will need lond running connections to websocker servers because they constantly need to update the location and receives update(bidirectional flow). 
+When the connection is initialized, the client sends location of the user. Websocket handler does the following:
+
+1. It updates the user's location in the location cache.
+2. Saves the location in a variable for further calculations
+3. Loads the users friend's from the database.
+4. Sends batch request to fetch location of all the friends from the location cache
+5. for each location returned from cache, the distance is calculated with the user's location. Far friends are ignored.
+6. The final result is returned back to the client.
+7. For each friend, the server subscriber to friends topic. This is done for both active and inactive friends.
+
+
+## TODO
+1. How to scale stateful servers behind a load balancer
+2. 
 
 
