@@ -51,7 +51,7 @@ These servers are stateless servers which handle requests like add/delete friend
 
 #### Web Socket Servers
 
-These are stateful servers that the clients connect to and send location updates. 
+These are stateful servers that the clients connect to and send location updates.
 The clients also receive location updates from nearby friends through these servers.
 
 #### Redis location Cache
@@ -112,6 +112,7 @@ Request: WS sends friend ID
 Response: nothing
 
 #### HTTP Requests
+
 add/delete friends, update profile etc.
 
 ### Data model
@@ -123,6 +124,7 @@ key: user_id
 value: location, timestamp
 
 We choose Redis and not some database because:
+
 1. Do don't need durable storage here because even if the cache goes down, it can be started with an empty cache which can warm up over time. It is a reasonable tradeoff.
 2. Redis gives super fast read wrtie speeds.
 
@@ -131,7 +133,7 @@ The cache will have TTL per entry which will be updated as the data is updated. 
 #### Location History database
 
 - We need database here since we need to persist the data for machine learning.
-- Since the write is heavy, Cassandra can be used. 
+- Since the write is heavy, Cassandra can be used.
 - We can also use Relational database but sharding would be required on user_id
 
 ### Design Deep Dive
@@ -144,11 +146,11 @@ These are stateless and can scaled by adding more servers or autoscaling them by
 
 ##### Websocket servers
 
-Websocket connections are stateful and scaling them is complex. We first need to drain the traffic from the servers from the load balancer side before adding a new server which has more hardware resources. 
+Websocket connections are stateful and scaling them is complex. We first need to drain the traffic from the servers from the load balancer side before adding a new server which has more hardware resources.
 
 ##### Client initialization
 
-The clients will need lond running connections to websocker servers because they constantly need to update the location and receives update(bidirectional flow). 
+The clients will need lond running connections to websocker servers because they constantly need to update the location and receives update(bidirectional flow).
 When the connection is initialized, the client sends location of the user. Websocket handler does the following:
 
 1. It updates the user's location in the location cache.
@@ -159,17 +161,17 @@ When the connection is initialized, the client sends location of the user. Webso
 6. The final result is returned back to the client.
 7. For each friend, the server subscriber to friends topic. This is done for both active and inactive friends.
 
-##### User database
+#### User profile database
 
 - The user database will hold the user data like profile, friends etc.
 - We can use relational database with sharding on user_id to scale the database
 
 ##### Location Cache
 
-  - Redis cache is used to store user_id and location
-  - There are 10 million active users with each entry requiring 100 bytes, it can fit in one server.
-  - But 10 million users sending request every 30 seconds means that QPS on redis server will be 334K, which is high. We can shard the data based on user_id and share the load among many redis servers.
-  - To improve availability, we can replicate the location data on each shard in a master-slave replication architecture.
+- Redis cache is used to store user_id and location
+- There are 10 million active users with each entry requiring 100 bytes, it can fit in one server.
+- But 10 million users sending request every 30 seconds means that QPS on redis server will be 334K, which is high. We can shard the data based on user_id and share the load among many redis servers.
+- To improve availability, we can replicate the location data on each shard in a master-slave replication architecture.
 
 #### Redis Pub/sub server
 
@@ -193,27 +195,29 @@ Hence we would need a redis cluster.
 
 Since we have a cluster of 140 redis servers, we would need a service discovery component which makes it easy for us to distribute the channels among these servers. We can use zookeeper or etcd for this.
 
-We can use the concept of consistent hashing and hash ring here. 
+We can use the concept of consistent hashing and hash ring here.
 
 We need the following:
+
 1. Ability to keep servers in a service discovery component and an API to update it.
 2. Clients to subscribe to updates to the hash ring
 
-1. We can create a hash ring which maps different redis servers on the ring. When the web socket handler sends the request to connect to a channel and publish data, the channel_id is hashed and mapped onto the ring to find the correct redis server which hosts that channel.
-2. Although zookeeper holds the hash ring and is the source of truth, we can keep a copy of hash ring in memory in each WS server. This can be kept updated regularly to keep it consistent.
+1.We can create a hash ring which maps different redis servers on the ring. When the web socket handler sends the request to connect to a channel and publish data, the channel_id is hashed and mapped onto the ring to find the correct redis server which hosts that channel.
+2.Although zookeeper holds the hash ring and is the source of truth, we can keep a copy of hash ring in memory in each WS server. This can be kept updated regularly to keep it consistent.
 
 ![consistent hashing](image-2.png)
 
 ![figure out the correct redis pubsub server](image-3.png)
 
-#### Scaling Redis cluster 
+#### Scaling Redis cluster
 
 - The Redis servers are stateful because each channel has certain set of specific subscribers. Whenever a redis server is turned down or replaced, we need to move the subscribers for that channel to new channel in a new server.
--   Whenever there is a change of redis server, the zookeeper will send updates to the web socket servers  hence there will be a lot of resubscription requests
--   Some ocassional misses in location update will be there which should be acceptable tradeoff.
--   Resizing should be done during the lowest traffic point of the day to avoid updates misses.
+- Whenever there is a change of redis server, the zookeeper will send updates to the web socket servers  hence there will be a lot of resubscription requests
+- Some ocassional misses in location update will be there which should be acceptable tradeoff.
+- Resizing should be done during the lowest traffic point of the day to avoid updates misses.
 
 Whenever a new server is added to the hashring:
+
 1. The traffic monitor sends updates about the changes in channels to the WS server.
 2. Only a small segment of hash ring will be updated.
 
@@ -222,6 +226,7 @@ The channel updates are received on the WS server handler and the handler has li
 #### Add/remove friends
 
 Whenever the main app has added/ removed friends, we can have callbacks to the Web socker servers which will do the following:
+
 1. In case a new friend is added, the WS server subscribers to the new friends channel
 2. The new channel also sends the new friends location if they are online
 3. When a friend is removed, another callback removes the subscriber from the channel
@@ -233,11 +238,12 @@ Whenever the main app has added/ removed friends, we can have callbacks to the W
 
 ### Nearby random friends
 
-As an additional feature, if we want to find nearby random friends. We can create pub/sub servers where we create a channel for a geohash. All the users who opt for nearby random friends should publish their location on this channel as well as subscribe to the geohash channel based on their location. 
+As an additional feature, if we want to find nearby random friends. We can create pub/sub servers where we create a channel for a geohash. All the users who opt for nearby random friends should publish their location on this channel as well as subscribe to the geohash channel based on their location.
 The location updates from that geohash channel would be sent to the users  who subscribe.
 
 ![nearby random friends](image-4.png)
 
 ## TODO
+
 1. How to scale stateful servers behind a load balancer
 2. Zookeeper and service discovery and how it is used with hash ring.
