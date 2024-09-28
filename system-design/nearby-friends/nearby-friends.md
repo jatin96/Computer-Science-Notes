@@ -86,6 +86,8 @@ These are used to send location updates to friends. The friends are subscribers 
 8. on receiving the location, the websocker connection handler calculates the distance using the variable which has the the location for the friend and the location received from the subscriber.
 9. if distance is close, the new location and timestamp is passed to the subscriber's client.
 
+![location update](image-1.png)
+
 ### API Design
 
 #### Web socket
@@ -200,6 +202,10 @@ We need the following:
 1. We can create a hash ring which maps different redis servers on the ring. When the web socket handler sends the request to connect to a channel and publish data, the channel_id is hashed and mapped onto the ring to find the correct redis server which hosts that channel.
 2. Although zookeeper holds the hash ring and is the source of truth, we can keep a copy of hash ring in memory in each WS server. This can be kept updated regularly to keep it consistent.
 
+![consistent hashing](image-2.png)
+
+![figure out the correct redis pubsub server](image-3.png)
+
 #### Scaling Redis cluster 
 
 - The Redis servers are stateful because each channel has certain set of specific subscribers. Whenever a redis server is turned down or replaced, we need to move the subscribers for that channel to new channel in a new server.
@@ -225,13 +231,12 @@ Whenever the main app has added/ removed friends, we can have callbacks to the W
 - The subscribers are scattered across many WS servers so the traffic is distributed and there should be not hotspot.
 - The load would increase on the pub/sub server. But since the servers are placed in a hash ring and there are 100 of them, the traffic should be ditributed evenly.
 
-
-### Nearby friends
+### Nearby random friends
 
 As an additional feature, if we want to find nearby random friends. We can create pub/sub servers where we create a channel for a geohash. All the users who opt for nearby random friends should publish their location on this channel as well as subscribe to the geohash channel based on their location. 
 The location updates from that geohash channel would be sent to the users  who subscribe.
 
-    
+![nearby random friends](image-4.png)
 
 ## TODO
 1. How to scale stateful servers behind a load balancer
