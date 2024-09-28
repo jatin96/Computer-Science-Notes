@@ -240,6 +240,4 @@ The location updates from that geohash channel would be sent to the users  who s
 
 ## TODO
 1. How to scale stateful servers behind a load balancer
-2. Zookeeper and service discovery and how it is used with hash ring
-
-
+2. Zookeeper and service discovery and how it is used with hash ring.
