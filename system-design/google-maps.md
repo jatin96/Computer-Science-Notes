@@ -97,7 +97,7 @@ locs: {lat, long, timestamp) tuple
 - Navigation service will find a reasonably fast route from source to destination
 - Accuracy is critical, we can tolerate a little bit of latency
 
-```json
+```
 GET /v1/nav?source=A&desitnation=B
 
 Response:
@@ -123,15 +123,36 @@ Response:
 
 #### Routing tiles
 
+Raw data in the form of roads is not usable. This raw data is convered into a set of routing tiles using periodic processing by some pipeline. We create 3 sets containing routing tiles at different levels of detail. How to store these routing tiles? We cannot keep all of them in memory like a normal graph datastructure is represented(adjacency list). One way is to serialize them into binary file and store them as object storage like in S3. 
+We can also store them in rows in database but that would be overkill since we would only be using the database to store but won't be making use of other DB features
+We should also cache the routing tiles heavily in the routing service.
+
 #### User location data
+
+User location data needs to be stored in a database that can handle heavy writes like Cassandra. 
+We will store the following:
+- userId
+- timestamp
+- user_mode: active/inactive
+- driving mode: car
+- latitude
+- longitude
 
 #### Geocoding database
 
+- This is used to store latitude and longitude of places.
+- This needs to be read heavy and writes won't be common
+- A good choice would be to use redis to store this data as a key value pair
+
 #### Precomputed images of world map
+- These can be cached in CDN
+- Backend storage can be S3 or any other object storage
 
 ### Services
 
 #### Location Service
+
+-   
 
 #### Rendering map 
 
