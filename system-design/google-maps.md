@@ -152,19 +152,77 @@ We will store the following:
 
 #### Location Service
 
--   
+- We choose availability over consistency here
+- Writes are huge so Casssandra would be a good choice
+- We will store the primary key as user_id and timestamp as clustering key. Value would be latitude, longitude pair
+- making partition key as user_id means that all location of a user would be stored in a single partition and thus retrieval of locations of a particular user would be efficient
+- How will the location data be used
+  - We will save user location in location DB for future use.
+  - We will also publish the location data to kafka where multiple services can subscribe to this data
+  - Machine learning service can use machine learning for personalization
+  - Routing tile service can use this data to detect blocked roads and other such updates to routing tiles and update the object storage with the updated tiles
+  - Traffic service can find out the live traffic status and update the live traffic db   
 
-#### Rendering map 
+#### Rendering map
+
+- We create different tiles at different zoom levels
+- Based on the zoom level and the position of the user, tiles are loaded
+- This way we can load only the required tiles to save bandwidth
+- Vectorized images can also be used which can be compressed more efficiently hence saving network bandwidth
+
+#### Shortest path service
+
+- Shortest path service is responsible for finding the distance between the source and destination. It returns the top k shortest paths.
+- The alogithm used can be variation of Dijkstra's algorithm
+- The service receives the starting and ending point location
+- These points are converted into geohashes to load the routing tiles
+- The algorithm starts from the starting point routing tile and as it slowly hydrates neighboring tiles which are required
+- There are connections from one level of tile to another so that we can enter the bigger tiles containing only the highways
 
 #### ETA service
 
+- The ETA service takes the possible paths as input and finds the time taken on each path, and then returns the estimated time taken for each paths
+- ETA service uses machine learning to find the path with least time taken and this is done using the live traffic data
+- One point to note here is that the traffic data after 10 - 20 mins should also be considered since the traffic might change
+
 #### Ranker service
+
+- Once the estimated time is calculated, this information is passed to the route planner and it then passes this information along with user filters to the ranker service
+- The ranker service takes all the k paths, with ETAs, with filters (like avoid tolls etc) and ranks the paths based on time taken, from lowest to highest and returns the result to the navigation service
+
 
 #### Updater service
 
-### Improvement
+- Traffic service: This service takes the location data and updates the live traffic DB which is used by ETA service to give accurate results
+- Routing tile processing service: This service takes the location data to see which roads are closed and which roads are newly constructed and updates the routing tiles. The updated routing tiles will help shortest path service to give accurate results
+
+
+### Improvement - Adaptive ETA and rerouting
+
+- Our current design doesn't take into account the changing traffic and how it will impact the ETA.
+- To do this we can create a database which tracks the routing tiles used by each user to navigate
+
+```
+user1: r1, r2, r3, r4, r5, r6
+user2: r2, r3, r4, r5
+.
+.
+usern: r1, r2, ... rm
+```
+
+- Now let us say that routing tile r2 has some issue and the road is blocked. To find out which active users are effected, we can use brute force solution to iterate and find each user which has r2 tile.
+- Another approach is to go up a level and find the routing tile which contains the current tile and keep doing this until the destination also falls under the routing tile: r2, super(r2), super(superIr2)) ....
+- Now, we need to check if the affected routing tile r2 is in ths file tile or not for all active users. If yes, those users' ETA would be updated.
 
 ### Delivery protocols
+
+- The server needs to constantly send updates for rerouting etc. So Websocket would be a better solution because it is light weight as compared to long polling.
+- Websocket is light weight because it doesn't need to open and tear connections like long polling. Also, not every HTTP header is sent in all websocket requests.
+
+## TODO
+
+- Study rasterized images and vectorized images and how vectorization helps save network bandwidth and zoom level smoothing
+- Go through all the reference links
 
 
 
