@@ -17,6 +17,7 @@
 ## Map 101
 
 ### Going from 3d to 2d
+
 - Map projection is the process of conversion of 3d map to 2d map
 
 ### Geocoding
@@ -52,6 +53,8 @@
   - Second level shows roads connecting districts
   - Third level shows roads which are major highways
 - Each tile can have reference to another tile with a different zoom level to connect highway and local roads, for example
+
+![routing tiles](image.png)
   
 ## Estimations
 
@@ -80,6 +83,8 @@ Peak QPS = 5 * QPS = 1 million QPS
 
 ## High level design
 
+![hld](image-1.png)
+
 ### Location service
 
 - We can send location in batches every 15 seconds.
@@ -87,17 +92,18 @@ Peak QPS = 5 * QPS = 1 million QPS
 - We also would be using Kafka for stream processing of data for various use cases
 - HTTP protocol can be used
 
-```
+```text
 POST /v1/location
 Parameters
 locs: {lat, long, timestamp) tuple
 ```
 
 ### Navigation Service
+
 - Navigation service will find a reasonably fast route from source to destination
 - Accuracy is critical, we can tolerate a little bit of latency
 
-```
+```text
 GET /v1/nav?source=A&desitnation=B
 
 Response:
@@ -107,7 +113,7 @@ Response:
 }
 ```
 
-### Map rendering
+### Map rendering logic
 
 - We can pregenerate a set of tiles at various zoom level.
 - Each tile is represented by it's geohash.
@@ -115,7 +121,8 @@ Response:
 - The tiles are served from CDN
 - The client can cache some tiles on the device itself because a user might use a route multiple times. For example, navigating to office everyday will use the same tiles
 - How to find which tile to request and make the map url can be done in two ways. First option is to use the latitude, longitude and zoom level to find the geohash and then request the tile using path.com/234df3.png. This would work but the encoding of geohash would be done on different devices running on different platforms. Changing the logic in future would involve updating a large number of devices, which could be a problem. We can create a URL serice for this, whose only job will be to construct the map url and send it back to the client. This will give us more control over the encoding, since we would be owning the server.
-- 
+
+![map rendering](image-2.png)
 
 ## Deep dive
 
@@ -123,14 +130,15 @@ Response:
 
 #### Routing tiles
 
-Raw data in the form of roads is not usable. This raw data is convered into a set of routing tiles using periodic processing by some pipeline. We create 3 sets containing routing tiles at different levels of detail. How to store these routing tiles? We cannot keep all of them in memory like a normal graph datastructure is represented(adjacency list). One way is to serialize them into binary file and store them as object storage like in S3. 
+Raw data in the form of roads is not usable. This raw data is convered into a set of routing tiles using periodic processing by some pipeline. We create 3 sets containing routing tiles at different levels of detail. How to store these routing tiles? We cannot keep all of them in memory like a normal graph datastructure is represented(adjacency list). One way is to serialize them into binary file and store them as object storage like in S3.
 We can also store them in rows in database but that would be overkill since we would only be using the database to store but won't be making use of other DB features
 We should also cache the routing tiles heavily in the routing service.
 
 #### User location data
 
-User location data needs to be stored in a database that can handle heavy writes like Cassandra. 
+User location data needs to be stored in a database that can handle heavy writes like Cassandra.
 We will store the following:
+
 - userId
 - timestamp
 - user_mode: active/inactive
@@ -145,6 +153,7 @@ We will store the following:
 - A good choice would be to use redis to store this data as a key value pair
 
 #### Precomputed images of world map
+
 - These can be cached in CDN
 - Backend storage can be S3 or any other object storage
 
@@ -161,7 +170,9 @@ We will store the following:
   - We will also publish the location data to kafka where multiple services can subscribe to this data
   - Machine learning service can use machine learning for personalization
   - Routing tile service can use this data to detect blocked roads and other such updates to routing tiles and update the object storage with the updated tiles
-  - Traffic service can find out the live traffic status and update the live traffic db   
+  - Traffic service can find out the live traffic status and update the live traffic db
+
+  ![location service](image-3.png)
 
 #### Rendering map
 
@@ -190,12 +201,10 @@ We will store the following:
 - Once the estimated time is calculated, this information is passed to the route planner and it then passes this information along with user filters to the ranker service
 - The ranker service takes all the k paths, with ETAs, with filters (like avoid tolls etc) and ranks the paths based on time taken, from lowest to highest and returns the result to the navigation service
 
-
 #### Updater service
 
 - Traffic service: This service takes the location data and updates the live traffic DB which is used by ETA service to give accurate results
 - Routing tile processing service: This service takes the location data to see which roads are closed and which roads are newly constructed and updates the routing tiles. The updated routing tiles will help shortest path service to give accurate results
-
 
 ### Improvement - Adaptive ETA and rerouting
 
@@ -211,18 +220,21 @@ usern: r1, r2, ... rm
 ```
 
 - Now let us say that routing tile r2 has some issue and the road is blocked. To find out which active users are effected, we can use brute force solution to iterate and find each user which has r2 tile.
-- Another approach is to go up a level and find the routing tile which contains the current tile and keep doing this until the destination also falls under the routing tile: r2, super(r2), super(superIr2)) ....
+- Another approach is to go up a level and find the routing tile which contains the current tile and keep doing this until the destination also falls under the routing tile: r2, super(r2), super(superIr2) ....
 - Now, we need to check if the affected routing tile r2 is in ths file tile or not for all active users. If yes, those users' ETA would be updated.
+
+![re routing](image-4.png)
 
 ### Delivery protocols
 
 - The server needs to constantly send updates for rerouting etc. So Websocket would be a better solution because it is light weight as compared to long polling.
 - Websocket is light weight because it doesn't need to open and tear connections like long polling. Also, not every HTTP header is sent in all websocket requests.
 
+### Final design
+
+![final design](image-5.png)
+
 ## TODO
 
 - Study rasterized images and vectorized images and how vectorization helps save network bandwidth and zoom level smoothing
 - Go through all the reference links
-
-
-
