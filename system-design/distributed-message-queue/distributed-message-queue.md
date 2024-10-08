@@ -44,7 +44,7 @@
 - Each partition behaves like a FIFO queue
 - Position of a message in partition is called offset
 - Message is sent to the topic, it is actually sent to a parition based on the message key
-- When a consumer subscribes to a topic, it pulls data from one or more of these partitions.
+- When a consumer subscribes to a topic, it pu  lls data from one or more of these partitions.
 - When there are multiple consumers subscribing to a topic, each is responsible for a subset of partitions. This is called consumer group.
 
 ### Consumer group
@@ -63,17 +63,67 @@
 
 ## Design deep dive
 
+- Design focuses on batching. Producers batch the request, brokers stored the messages in batches and consumers consume the messages in batches.
+- We want high throughput with persistence
+- Message are transferred from producers to consumers with no modification to avoid copying small data
+
 ### Data storage
+
+- System is read-write heavy
+- no update or delete operations
+- sequential data access
+
+Choices for persistence
+
+1. Database: It is difficult to find a database which is write and read heavy at scale
+2. Write ahead log: WAL is file which only allows appending lines to the end of the file. WAL have purely sequential access so the disk performance is really good.
+
+### Segmentation
+
+- WAL cannot be one huge file so we need segmentation
+- Only the active segment allows write request
+- Inactive segments serve read requests
+- If a server is inactive for a long time, we can truncate the segment to clean data
+- segments of a partition are arranged inside folders
+
+> Note: Sequential access of data makes read-write quite fast even on disk. Disk is usually slow when we do random access
 
 ### Message data structure
 
+The idea here is to avoid copying of data becaus at our scale it can be costly. The message has the following fields:
+
+- key byte[]
+- value byte[]
+- timestamp long
+- size long
+- topic string
+- partition int
+- offset long
+
 ### Message key
+
+- Messaging key is used to find the partition where the message should go based on consitent hashing
+- If key is not given, a partition is randomly choosen
+- User can define its own hashing algorithm as well for even distribution
+- Hashing algorithm will distribute messages evenly even if we increase the partitions
+- keys might not be unique
 
 ### Message value
 
+- this is the actual payload of the message
+
 ### Other fields of message
 
+- topic, partition, offset
+- We can find a message using topic -> partition -> offset
+
 ### Batching
+
+- Batching is very imporant in this system because of the scale
+- We can batch messages on producers and send multiple messages in one batch to save network io
+- We can batch messages while writing to WAL where we can write many logs in chunk. 
+- This will increase throughput
+- There is a tradeoff between latency and throughtput. If we want to improve latency, we need to reduce the batch sizes which means we might need more paritions since more requests would come in
 
 ### Producer flow
 
