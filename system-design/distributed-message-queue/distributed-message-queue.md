@@ -127,14 +127,62 @@ The idea here is to avoid copying of data becaus at our scale it can be costly. 
 
 ### Producer flow
 
+- We need to decide which broker the producer should connect to?
+- This can be handled by a routing layer whose job is to route the message to the correct broker. We can have it as a separate service or make it part of the producer library to reduce network hops
+- We can also introduce a buffer in the client library which will hold messages for sometime and send them in a batch.
+- Throughput and latency will be a tradeoff in batching. If we increase the batch size, we can send a lot of messages in a single request which will increase the throughput. But latency would reduce because creating a big batch will take time.
+- If we reduce the batch size, we can send messages quickly which will decrease the latency but reduce throughput. We can keep the batch size configurable and the users can choose between latency and throughput.
+
 ### Consumer flow
 
-### Push vs pull
+- Consumers use offset to keep a track of till where the data has been consumed from the queue.
+
+We can have push model and pull models for consumption of data
 
 #### Push model
 
+In this, the broker pushes the data to the consumers when the data is received
+
+Pros:
+- There is not wait time since the data is immediately pushed
+
+Cons:
+- If rate of consumption < rate of production, the consumers can get overwhelmed.
 
 #### Pull model
+
+The consumers pull the data from the brokers
+
+Pros:
+- Since consumers control the rate of consumption, we can control the batching and decided at what rate we want to consume.
+- If rate of consumption < rate of production, we can simply add more consumers or control the rate of consumption
+
+
+Cons:
+- The consumers would poll the brokers and it might happen that there are no messages to consume, so unnecessary calls are made. This can be reduced by long polling
+
+#### Rebalancing
+
+When a new consumer joins:
+
+1. Each consumer sends heartbeat to the coordinator to let it know that it is alive.
+2. When a new consumer joins, the cooridinator asks all the consuemrs to rejoin via the reply for their heartbeat.
+3. Coordinator chooses a consumer as the leader and informs it about all the active consumers.
+4. The leader consumer creates the distribution plan and sends it back to the coorindator.
+5. The coordinator then sends back the new plan to all the consumers
+
+Why the distribution plan is prepared by the leader consumer and not by the coordinator?
+
+- This is because the consumer is closer to the data and hence it can use various parameters to make a better plan
+- Fault tolerance
+
+When a consumer leaves:
+
+- When a consumers leaves, the coordinator knows about it from the heartbeat.
+- All other consumers are asked to rejoin.
+- One of the consumer is selected as the leader and asked to create the distribution plan
+- The consumers are informed of the distribution plan and they start consuming based on the new plan
+
 
 ### State storage
 
