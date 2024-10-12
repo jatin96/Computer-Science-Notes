@@ -225,8 +225,22 @@ It simplifies our design as follows:
 - Replica distribution plan (which means which replica will be stored in which broker) is created by the co ordination service. 
 - Coordination service elects the leader broker which creates the partition replica distribution plan and stores it in the metadata storage
 - Other brokers can obey the plan in the metadata storage
-- 
+
 ### In-sync replica
+
+In sync replicas means that the replicas which are in sync with the leader. We can specify replica.lag.max.messages=3 which means that the replicas which are behind by less than 3 messages are considered in sync.
+
+ISR are needed because using them we can choose between latency and durability
+- If we need no loss of messages, we can choose all replicas to be in sync
+- If we need low latency, then we can choose less replicas to be in sync
+
+#### ACK settings
+
+ACK = all
+
+- This means that the message would be sent to the consumer only when all the replicas are in sync
+- This increase the latency but will offer max durability
+ 
 
 ### Scalability
 
