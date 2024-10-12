@@ -240,27 +240,83 @@ ACK = all
 
 - This means that the message would be sent to the consumer only when all the replicas are in sync
 - This increase the latency but will offer max durability
- 
+
+ACK=1
+
+- The producer receives ack once the leader persists the the message
+- This means if the leader goes down immediately after sending ack, message would be lost
+- This is suitable for low latency systems where some data loss is acceptable
+
+ ACK=0
+
+ - The producer doesn't wait for ack and keeps sending them messages.
+ - This is useful for very low latency systems where potential data loss is acceptable
+ - This is useful for metrics collection or logging data since volume is high and data loss is acceptable
+
+Consumer side:
+
+- Consumers connect to leader replicas because of design simplicity(since leadre is always ISR). Since message in one partition is always dispatched to one consumer within a consumer group(for ordered process and avoiding same message to be processed by multiple consumers). This means that very limited connections are there for leader replica
+- the number of connections to the replica is as not large unless the topic is super hot. If the topic is hot, we can increase the number of partitions and consumers.
 
 ### Scalability
 
 #### Producer
 
+Scalability can be achieved by increasing the number of producers since no coordination is needed here.
+
 #### Consumer
+
+- Consumer groups  are independent of each other so we can easily add more consumer groups
+- Within a consumer group, increase and decreasing of consumers means that rebalancing has to take place.
 
 #### Broker
 
+- When a broker goes down, there the coordination service knows about it and the leader broker creates a new distribution plan and others follow that plan.
+- replicas should be stored on different brokers for fault tolerance in case a node goes down
+- They should also be stored in different data centers to further increase the fault tolerance in case the data center goes down. This will increase latency of replication and synchronization
+- When a new broker is added, we temporarily increase the number of replicas and add new replicas in the new broker based on replica distribution plan.
+- After the new broker is all caught up, we can remove the redundant replica from broker 1. 
+
 #### Partition
+
+- We might increase the number of partitions. When we change the number of partitions, the consumers will be notified when they communicate with the brokers and consumer rebalancing will be triggered
+- After rebalancing, consumers will start consuming from the new alloted partitions.
+- Deleting a partition is more complicated. We will decommission a partition so that new messages are not pushed to this partition. Once the retention period is over, the partition can be deleted.
 
 ### Data delivery semantics
 
 #### At most once
 
+- producer pushes the messages and doesn't wait for ACK (ACK = 0). Message may be lost but that is acceptable.
+- On the consumer side, the message is consumed and commits the offset before processing the message.
+- This is used in metrics collection and logging data.
+
 #### At least once
 
-#### Exactly once
+- This will be sent with ACK = 1 or ACK = all based on how much durability we want.
+- The data is consumed by the consumer and offset is commited only when the data is processed. This is to ensure that data is received
+- If the consumer fails, the message is consumed again.
 
+#### Exactly once
+- Difficult to achieve and used in financial services where data loss and duplication is not acceptable
+  
 ## Advanced Features
+
+### Filtering messages
+
+Sometimes the consumer might need to process messages of a subtype within a topic. For example, ordering system pushes all order messages to the topic and consumers like payments needs to process payment related messages. 
+
+- We can create topics for payments system and ordering systems. But this would increase the number of topics by a lot since we would need to create topics for every subtype
+- Duplication of messages in various topics
+- The producer code needs to change everytime a new consumer requirement comes as producers and consumers are tightly coupled.
+- For filtering of messages, we should add tags in metadata. The filtering data should be in metadata because we don't want to use payload as it may contain encrpyted data. Decrpytion of messages just for filtering would increase the latency.
+- Tags will be used on the brokers to filter the messages. The consumers can subscribe to various tags to get data from the topics for a particular tags
+
+### Delayed messages
+
+Sometimes we want to delay the message delivery. For example, we want to check if payment is made within 30 mins of the order placement. A delayed message to verify payment is sent to the topic. The message would be delivered after 30 mins. At that time, the consumer will verify that payment is made or not.
+
+We can design this by pushing to a temporary topic and a timing function can take the message from temporary topic to the main topic for delivery.
 
 ## TODO
 
