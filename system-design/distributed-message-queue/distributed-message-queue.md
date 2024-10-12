@@ -186,12 +186,46 @@ When a consumer leaves:
 
 ### State storage
 
+States here represents the consumer or consumer group offsets for each partition and the mapping between partitions and consumers
+
+Data access patterns are as follows:
+- Frequent read and write operations
+- data is updated frequently
+- consistency is important
+
+We can use KV store like Zookeeper to manage states
+
 ### Metadata storage
+
+Metadata 
+- Retention period
+- number of partitions
+- distribution of replicas
+
+This data is small and is not updated frequently, but we need consistency. Zooper is a good choice.
 
 ### Zookeeper
 
+Zookeeper is an essential component of a distributed messaging queue. It provides
+1. Distributed configuration service
+2. Synchronization service
+
+It simplifies our design as follows:
+1. Metadata and states are stored in Zookeeper
+2. Zooper will help with leader election of broker cluster
+3. The broker only needs to maintain data storage for messages
+
 ### Replication
 
+- Each partition will have 3 replicas
+- The messages are sent to the leader replica
+- The follower replicas constantly pull the data to stay in sync
+- When a given number of replicas are in sync, the leader returns back the response and the message is ready to be consumed.
+
+- Replica distribution plan (which means which replica will be stored in which broker) is created by the co ordination service. 
+- Coordination service elects the leader broker which creates the partition replica distribution plan and stores it in the metadata storage
+- Other brokers can obey the plan in the metadata storage
+- 
 ### In-sync replica
 
 ### Scalability
@@ -213,4 +247,10 @@ When a consumer leaves:
 #### Exactly once
 
 ## Advanced Features
+
+## TODO
+
+- Study zookeeper
+- Study replication from DDIA
+
 
