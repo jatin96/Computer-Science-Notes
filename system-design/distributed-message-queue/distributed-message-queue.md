@@ -61,6 +61,8 @@
 
 ### High level architecture
 
+![high level design](image-8.png)
+
 ## Design deep dive
 
 - Design focuses on batching. Producers batch the request, brokers stored the messages in batches and consumers consume the messages in batches.
@@ -77,6 +79,8 @@ Choices for persistence
 
 1. Database: It is difficult to find a database which is write and read heavy at scale
 2. Write ahead log: WAL is file which only allows appending lines to the end of the file. WAL have purely sequential access so the disk performance is really good.
+
+![data segment file distribution](image-7.png)
 
 ### Segmentation
 
@@ -183,6 +187,10 @@ When a consumer leaves:
 - One of the consumer is selected as the leader and asked to create the distribution plan
 - The consumers are informed of the distribution plan and they start consuming based on the new plan
 
+![new consumer joins](image-5.png)
+![existing consumer leaves](image-6.png)
+![new consumer crashes](image-4.png)
+
 
 ### State storage
 
@@ -193,7 +201,9 @@ Data access patterns are as follows:
 - data is updated frequently
 - consistency is important
 
-We can use KV store like Zookeeper to manage states
+We can use KV store like Zookeeper to manage states.
+
+![Offset](image-3.png)
 
 ### Metadata storage
 
@@ -214,6 +224,8 @@ It simplifies our design as follows:
 1. Metadata and states are stored in Zookeeper
 2. Zooper will help with leader election of broker cluster
 3. The broker only needs to maintain data storage for messages
+
+![zookeeper](image-2.png)
 
 ### Replication
 
@@ -275,8 +287,11 @@ Scalability can be achieved by increasing the number of producers since no coord
 - replicas should be stored on different brokers for fault tolerance in case a node goes down
 - They should also be stored in different data centers to further increase the fault tolerance in case the data center goes down. This will increase latency of replication and synchronization
 - When a new broker is added, we temporarily increase the number of replicas and add new replicas in the new broker based on replica distribution plan.
-- After the new broker is all caught up, we can remove the redundant replica from broker 1. 
+- After the new broker is all caught up, we can remove the redundant replica from broker 1.
 
+![broker crashes](image.png)
+
+![add new broker](image-1.png)
 #### Partition
 
 - We might increase the number of partitions. When we change the number of partitions, the consumers will be notified when they communicate with the brokers and consumer rebalancing will be triggered
@@ -298,13 +313,14 @@ Scalability can be achieved by increasing the number of producers since no coord
 - If the consumer fails, the message is consumed again.
 
 #### Exactly once
+
 - Difficult to achieve and used in financial services where data loss and duplication is not acceptable
   
 ## Advanced Features
 
 ### Filtering messages
 
-Sometimes the consumer might need to process messages of a subtype within a topic. For example, ordering system pushes all order messages to the topic and consumers like payments needs to process payment related messages. 
+Sometimes the consumer might need to process messages of a subtype within a topic. For example, ordering system pushes all order messages to the topic and consumers like payments needs to process payment related messages.
 
 - We can create topics for payments system and ordering systems. But this would increase the number of topics by a lot since we would need to create topics for every subtype
 - Duplication of messages in various topics
@@ -322,5 +338,3 @@ We can design this by pushing to a temporary topic and a timing function can tak
 
 - Study zookeeper
 - Study replication from DDIA
-
-
