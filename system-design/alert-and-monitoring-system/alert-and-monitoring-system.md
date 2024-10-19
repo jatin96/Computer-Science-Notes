@@ -35,6 +35,8 @@ We will have 5 major components:
 - Alerting: analyze incoming data, detect anomalies and fire alerts
 - Visualization: present the data in charts, graphs etc.
 
+![5 major components](image.png)
+
 ### Data model
 
 - Metrics are repesented as time series data
@@ -67,6 +69,8 @@ Eg:
 
 ### High Level Design
 
+![HLD](image-1.png)
+
 ## Design Deep Dive
 
 ### Metrics Collection
@@ -82,12 +86,16 @@ Eg:
 - We would need to use multiple metrics collectors for scale and fault tolerance. How will we coordinate so that multiple collectors don't end up persisting duplicate data?
 - We can use consistent hash ring for this
 
+![pull model](image-2.png)
+
 #### Push model
 
 - A collection agent is installed on every server which is a long running software that collects the metrics and sends it to the metrics collector
 - Collection agent may also aggregate the metrics before sending them to the metrics collector
 - Aggregation reduces the volumne of data sent to the metrics collector
 - If push traffic is high on the metrics collector, the collection agent can keep some data in buffer and send it later. This can also result in loss of data if the servers in autoscaling group and rotated out frequently.
+
+![push model](image-3.png)
 
 #### Which one to choose?
 
@@ -113,6 +121,9 @@ Eg:
     - If DB is down, kafka can store the metrics data for sometime ensuring no data loss and making the system resilient.
     - Allows independent scaling of producers and consumers.
 
+
+![add queues](image-4.png)
+
 ### Scale through kafka
 
 - We can configure the number of paritions based on throughput requirements
@@ -134,6 +145,8 @@ Eg:
 ### Cache layer
 
 - Cache layer can be added to reduce load on TSDB
+
+![Cache layer](image-5.png)
 
 ### Case against Query service
 
@@ -174,9 +187,15 @@ Eg:
 
 It is better to buy off the shelf alerting system rather than build your own
 
+![alerting system](image-6.png)
+
 ### Visualization system
 
 - It is better to buy off the shelf visualization system rather than build your own. Grafana is a good option as it integrates well with TSDB.
+
+### Final Design
+
+![Final design](image-7.png)
 
 
 
